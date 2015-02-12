@@ -26,7 +26,9 @@ episode_tree = html.fromstring(episode_page.text)
 video_url = base_url + episode_tree.xpath('//*[@id="link_56963690"]/td[2]/a')[0].values()[1]
 print video_url
 
+sleep(1)
+
 video_page = requests.get(video_url)
 video_tree = html.fromstring(video_page.text)
-gorilla_url = video_tree.xpath('/html/body/div[3]/div[2]/div/div[2]/div/div/div/div/div/div/div/a')[0].values()
+gorilla_url = video_tree.xpath('/html/body/div[3]/div[2]/div/div[2]/div/div/div/div/div/div/div/a')[0].values()[0]
 print gorilla_url
