@@ -18,6 +18,8 @@ tree = html.fromstring(page.text)
 episode_url = base_url + tree.xpath('//*[@id="left"]/div/ul/li[1]/a')[0].values()[0]
 print episode_url
 
+sleep(1)
+
 episode_page = requests.get(episode_url)
 
 episode_tree = html.fromstring(episode_page.text)
