@@ -4,6 +4,8 @@ import re
 from time import sleep
 import json
 
+series_list = ["agent_carter", "game_of_thrones", "silicon_valley", "family_guy", "gotham", "suits", "arrow", "the_flash_2014_", "Agents_of_S_H_I_E_L_D"]
+
 series = raw_input("Enter the series to download: ")
 
 series = re.sub(r'\s', '_', series)
