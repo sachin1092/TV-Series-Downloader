@@ -24,15 +24,16 @@ sleep(1)
 episode_page = requests.get(episode_url)
 
 episode_tree = html.fromstring(episode_page.text)
-video_urls = episode_tree.xpath('//*[@id="myTable"]/tbody/tr[2]/td[2]/a')[0].values()[1]
+video_url = base_url + episode_tree.xpath('//*[@id="myTable"]/tbody/tr[2]/td[2]/a')[0].values()[1]
 
+print video_url
 
-# sleep(1)
+sleep(1)
 
-# video_page = requests.get(video_url)
-# video_tree = html.fromstring(video_page.text)
-# gorilla_url = video_tree.xpath('/html/body/div[3]/div[2]/div/div[2]/div/div/div/div/div/div/div/a')[0].values()[0]
-# print gorilla_url
+video_page = requests.get(video_url)
+video_tree = html.fromstring(video_page.text)
+gorilla_url = video_tree.xpath('/html/body/div[3]/div[2]/div/div[2]/div/div/div/div/div/div/div/a')[0].values()[0]
+print gorilla_url
 
-# download_resp = requests.get('http://my-youtube-dl.appspot.com/api/info?url=' + gorilla_url + '&flatten=True')
-# print json.loads(download_resp.text)['videos'][0]['url']
+download_resp = requests.get('http://my-youtube-dl.appspot.com/api/info?url=' + gorilla_url + '&flatten=True')
+print json.loads(download_resp.text)['videos'][0]['url']
