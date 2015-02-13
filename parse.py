@@ -24,9 +24,9 @@ sleep(1)
 episode_page = requests.get(episode_url)
 
 episode_tree = html.fromstring(episode_page.text)
-video_urls = episode_tree.xpath('//*[@id="myTable"]/tbody')[0].values()
+video_urls = episode_tree.xpath('//*[@id="myTable"]/tbody/tr[2]/td[2]/a')
 for video_url in video_urls:
-	print video_url
+	print video_url.values()
 
 
 # sleep(1)
