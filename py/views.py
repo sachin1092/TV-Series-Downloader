@@ -71,7 +71,7 @@ class UploadHandler(webapp2.RequestHandler):
         start = []
         end = []
 
-        BLOCK_SIZE = 1000 * 1000  # 1000K Bytes per block
+        BLOCK_SIZE = 1000 * 1000 * 2  # 1000K Bytes per block
         if contentLength > 0:
             # split the content into several parts: #BLOCK_SIZE per block.
             blockNum = contentLength / BLOCK_SIZE

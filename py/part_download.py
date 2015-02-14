@@ -28,6 +28,7 @@ def part_download(url, start=[], end=[], index=0, filename="testFile"):
 
     if index == len(start):
         logging.info("Completed... yay!")
+        return
         # merge_ranges(filename, files)
 
     logging.info('thread %s is running' % index)
