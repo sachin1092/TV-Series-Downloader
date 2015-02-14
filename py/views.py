@@ -1,9 +1,9 @@
 import string
 import webapp2
-from dbupload import DropboxConnection
-import py.lib.ServiceApiConfig as SAC
+# from dbupload import DropboxConnection
+# import py.lib.ServiceApiConfig as SAC
 # from getpass import getpass
-import requests
+# import requests
 import logging
 import httplib
 import re
@@ -40,10 +40,10 @@ class UploadHandler(webapp2.RequestHandler):
 
     def get(self):
 
-        service = SAC.createService("me@sachinshinde.com", "gDrive")
-        self.response.write(str(service.files().list().execute()))
-
-        return
+        # service = SAC.createService("me@sachinshinde.com", "gDrive")
+        # self.response.write(str(service.files().list().execute()))
+        #
+        # return
         from google.appengine.api import urlfetch
         urlfetch.set_default_fetch_deadline(60)
 
@@ -57,6 +57,9 @@ class UploadHandler(webapp2.RequestHandler):
         hostURL = match.group(1) if match.group(1) else match.group(3)
         resourceURL = match.group(2) if match.group(2) else match.group(4)
 
+        hostURL = hostURL.replace(" ", "%20")
+        resourceURL = resourceURL.replace(" ", "%20")
+
         logging.info("hosturl %s" % hostURL)
         logging.info("resourceurl %s" % resourceURL)
 
@@ -68,7 +71,7 @@ class UploadHandler(webapp2.RequestHandler):
         start = []
         end = []
 
-        BLOCK_SIZE = 1000 * 100  # 100K Bytes per block
+        BLOCK_SIZE = 1000 * 1000  # 1000K Bytes per block
         if contentLength > 0:
             # split the content into several parts: #BLOCK_SIZE per block.
             blockNum = contentLength / BLOCK_SIZE
