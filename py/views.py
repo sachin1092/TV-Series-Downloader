@@ -9,7 +9,7 @@ import httplib
 import re
 from google.appengine.ext import deferred
 
-# author: sachin.shinde@searce.com
+# author: me@sachinshinde.com
 from py import part_download
 
 
