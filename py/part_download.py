@@ -62,7 +62,7 @@ def partial_download(url, start=[], end=[], index=0, filename="testFile"):
     conn = DropboxConnection(email, password)
 
     # Upload the file
-    conn.upload_file_f(io.BytesIO(r1.content), "/"+filename, filename + "part_" + str(index))
+    conn.upload_file_f(io.BytesIO(r1.content), "/downloads/"+filename, filename + "_part_" + str(index))
 
     logging.info(conn.get_dir_list("/"+filename))
 
