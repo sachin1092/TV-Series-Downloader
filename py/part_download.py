@@ -6,6 +6,7 @@ import requests
 from google.appengine.ext import deferred
 import webapp2
 import consts
+from config import ConfigReader
 
 # author: me@sachinshinde.com
 from dbupload import DropboxConnection
@@ -55,8 +56,10 @@ def partial_download(url, start=[], end=[], index=0, filename="testFile"):
     logging.info("Status Code: %s" % r1.status_code)
     logging.info(" for index: %d" % index)
 
-    email = consts.email
-    password = consts.password
+    config_reader = ConfigReader()
+
+    email = config_reader.get_dropbox_email()
+    password = config_reader.get_dropbox_password()
 
     # Create the connection
     conn = DropboxConnection(email, password)
