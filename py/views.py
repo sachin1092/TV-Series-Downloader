@@ -1,9 +1,5 @@
 import string
 import webapp2
-# from dbupload import DropboxConnection
-# import py.lib.ServiceApiConfig as SAC
-# from getpass import getpass
-# import requests
 import logging
 import httplib
 import re
@@ -40,10 +36,6 @@ class UploadHandler(webapp2.RequestHandler):
 
     def get(self):
 
-        # service = SAC.createService("me@sachinshinde.com", "gDrive")
-        # self.response.write(str(service.files().list().execute()))
-        #
-        # return
         from google.appengine.api import urlfetch
         urlfetch.set_default_fetch_deadline(60)
 
@@ -94,37 +86,4 @@ class UploadHandler(webapp2.RequestHandler):
                 part_download.part_download, url=url,
                 start=start, end=end, index=0, filename=filename)
 
-            # email = "me@sachinshinde.com"  #raw_input("Enter Dropbox email address:")
-            # password = "dropboxpass"  #getpass("Enter Dropbox password:")
-            #
-            # from google.appengine.api import urlfetch
-            # urlfetch.set_default_fetch_deadline(60)
-            #
-            # # Create a little test file
-            # # fh = open("small_test_file.txt","w")
-            # # fh.write("Small test file")
-            # # fh.close()
-            #
-            #
-            # # Create the connection
-            # conn = DropboxConnection(email, password)
-            # # try:
-            # # Download file from internet
-            # logging.info("***starting download")
-            # r = requests.get(
-            #     "http://50.7.164.194:8182/ucorn5vyrcu4tqukwyalhetmlq3qo6unjderakppp3bx4c5ecz6kn22b7m/video.mp4")
-            # logging.info(len(r.content))
-            # import io
-            #
-            # f = io.BytesIO(r.content)
-            # logging.info("***file downloaded")
-            #
-            # # Upload the file
-            # conn.upload_file_f(f, "/", "test.mp3")
-            # # print("Upload")
-            # # except:
-            # #     logging.info("Upload failed")
-            # # else:
-            # #     self.response.write("Upload successful...yay!!")
-            # #     logging.info("Uploaded small_test_file.txt to the root of your Dropbox")
         self.response.write("Success...I guess")

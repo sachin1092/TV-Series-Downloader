@@ -58,7 +58,6 @@ class HttpPartialDownloadThread(Thread):
         # conn.close()
         return
 
-
 # end of class
 
 def mergeRanges(fileName, partialFileCount):
