@@ -168,6 +168,7 @@ class DownloadListHandler(webapp2.RequestHandler):
 class ResponseHandler(webapp2.RequestHandler):
     def get(self):
         url = self.request.GET["url"]
+        logging.info(self.request.cookies)
         self.response.write(requests.get(url).content)
 
 
