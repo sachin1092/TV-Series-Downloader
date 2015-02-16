@@ -9,7 +9,7 @@ def initiate_download(status):
     filename = status['filename']
     start = []
     end = []
-    BLOCK_SIZE = 1000 * 1000 * 2  # 2000K Bytes per block
+    BLOCK_SIZE = 1000 * 1000 * 5  # 2000K Bytes per block
     if size > 0:
         # split the content into several parts: #BLOCK_SIZE per block.
         blockNum = size / BLOCK_SIZE
@@ -26,6 +26,8 @@ def initiate_download(status):
                 start.append(start_byte)
                 end.append(end_byte)
 
+    conn = part_download.login()
+
     deferred.defer(
         part_download.part_download, url=url,
-        start=start, end=end, index=index, filename=filename, size=size)
+        start=start, end=end, index=index, filename=filename, size=size, conn=conn)

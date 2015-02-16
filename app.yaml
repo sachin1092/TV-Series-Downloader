@@ -1,4 +1,4 @@
-application: series-downloader
+application: movies-downloader
 
 version: 0-1
 runtime: python27
@@ -23,6 +23,14 @@ handlers:
   secure: optional
 
 - url: /checkDownloads.*
+  script: py.main.app
+  secure: optional
+
+- url: /downloads.*
+  script: py.main.app
+  secure: optional
+
+- url: /getInfo.*
   script: py.main.app
   secure: optional
 

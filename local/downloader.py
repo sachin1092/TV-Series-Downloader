@@ -29,7 +29,7 @@ def start_download():
         completed[fold] = False
 
         my_fold = fold.replace("%20", " ")
-        call(["mkdir", home + "/Series-Downloads/" + my_fold])
+        # call(["mkdir", home + "/Series-Downloads/" + my_fold])
         url = json.loads(requests.get(
             "http://series-downloader.appspot.com/getDownloadList?action=getDirURL&dir=" + fold).content)["url"]
         write_to_downloader_log(url)
@@ -42,7 +42,7 @@ def start_download():
                                    + fold).content
         write_to_downloader_log(delete_resp)
 
-        if re.search("Dropbox", delete_resp):
+        if not re.search("Dropbox", delete_resp):
             write_to_downloader_log("Error occurred while deleting so trying again.")
             delete_resp = requests.get("http://series-downloader.appspot.com/getDownloadList?action=delFold&dir="
                                        + fold).content

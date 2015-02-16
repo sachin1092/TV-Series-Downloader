@@ -85,10 +85,20 @@ class DropboxConnection:
 
         try:
             self.root_ns = re.findall(r"\"root_ns\": (\d+)", src)[0]
-            self.token = re.findall(r"\"TOKEN\": ['\"](.+?)['\"]", src)[0].decode('string_escape')
-
         except:
+            logging.info("error in root_ns")
+            logging.info(src)
             raise (Exception("Unable to find constants for AJAX requests"))
+        try:
+            self.token = re.findall(r"\s*name\s*=\s*\"t\"\s+value\s*=\s*\"(\w*)\"\s*/>", src)[0].decode('string_escape')
+        except:
+            try:
+                self.token = re.findall(r"\"TOKEN\": ['\"](.+?)['\"]", src)[0].decode('string_escape')
+            except:
+                logging.info("error in token")
+                logging.info(src)
+                raise (Exception("Unable to find constants for AJAX requests"))
+
 
     def refresh_constants(self):
         """ Update constants from page """
@@ -97,11 +107,32 @@ class DropboxConnection:
 
         try:
             self.root_ns = re.findall(r"\"root_ns\": (\d+)", src)[0]
-            self.token = re.findall(r"\"TOKEN\": ['\"](.+?)['\"]", src)[0].decode('string_escape')
+        except Exception, e:
+            logging.info('root_ns')
+            logging.info(src)
+            raise (Exception("Unable to find constants for AJAX requests"))
+
+        try:
+            self.token = re.findall(r"\s*name\s*=\s*\"t\"\s+value\s*=\s*\"(\w*)\"\s*/>", src)[0].decode('string_escape')
+        except:
+            try:
+                self.token = re.findall(r"\"TOKEN\": ['\"](.+?)['\"]", src)[0].decode('string_escape')
+            except:
+                logging.info("error in token")
+                logging.info(src)
+                # raise (Exception("Unable to find constants for AJAX requests"))
+
+        try:
             self.uid = re.findall(r"\"id\": (\d+)", src)[0]
+        except:
+            self.uid = '54641338'
+
+        try:
             self.request_id = re.findall(r"\"REQUEST_ID\": ['\"]([a-z0-9]+)['\"]", src)[0]
 
         except:
+            logging.info('req_id')
+            logging.info(src)
             raise (Exception("Unable to find constants for AJAX requests"))
 
 

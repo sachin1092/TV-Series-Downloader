@@ -1,3 +1,4 @@
+import io
 import json
 import requests
 import string
@@ -11,7 +12,7 @@ from google.appengine.ext import deferred
 from dbupload import DropboxConnection
 from py import part_download
 from py.config import ConfigReader
-from py.check_downloads import initiate_download
+# from py.check_downloads import initiate_download
 
 
 def getContentLength(conn, resourceURL):
@@ -27,11 +28,11 @@ def getContentLength(conn, resourceURL):
 
     content_length = 0
 
-    #read "accept-ranges" header to see if server supports ranges request
+    # read "accept-ranges" header to see if server supports ranges request
     accept_ranges = r1.getheader("accept-ranges")
 
     if accept_ranges == "bytes":
-        #read "content-length" header to get the length of the content section of the HTTP message in bytes
+        # read "content-length" header to get the length of the content section of the HTTP message in bytes
         content_length = string.atoi(r1.getheader("content-length"))
 
     return content_length
@@ -50,7 +51,7 @@ class UploadHandler(webapp2.RequestHandler):
         logging.info(filename)
         logging.info(url)
 
-        match = re.search(r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{4})(.*)|http://(\w{3}\.\w*\.\w*)(.*)", url)
+        match = re.search(r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{4})(.*)|http://(\w{0,5}\.\w*\.\w*:\d{4})(.*)", url)
         hostURL = match.group(1) if match.group(1) else match.group(3)
         resourceURL = match.group(2) if match.group(2) else match.group(4)
 
@@ -68,7 +69,7 @@ class UploadHandler(webapp2.RequestHandler):
         start = []
         end = []
 
-        BLOCK_SIZE = 1000 * 1000 * 2  # 2000K Bytes per block
+        BLOCK_SIZE = 1000 * 1000 * 5  # 5000K Bytes per block
         if contentLength > 0:
             # split the content into several parts: #BLOCK_SIZE per block.
             blockNum = contentLength / BLOCK_SIZE
@@ -86,9 +87,12 @@ class UploadHandler(webapp2.RequestHandler):
                     end.append(end_byte)
 
             status = {'status': 'in progress', 'url': url, 'size': contentLength, 'last_block': -1,
+                      'filename': filename,
                       'ext': str(re.search("\.*.*(\.[a-zA-Z0-9]+)", url).group(1))}
 
-            part_download.write_status(json.dumps(status), filename)
+            conn = part_download.login()
+
+            part_download.write_status(json.dumps(status), filename, conn)
             logging.info("Starting the defer..YO!!")
 
             deferred.defer(
@@ -170,6 +174,9 @@ class ResponseHandler(webapp2.RequestHandler):
 class DownloadChecker(webapp2.RequestHandler):
     def get(self):
         logging.info("Running downloader checker cron")
+        from google.appengine.api import urlfetch
+
+        urlfetch.set_default_fetch_deadline(60)
 
         config_reader = ConfigReader()
         email = config_reader.get_dropbox_email()
@@ -184,8 +191,80 @@ class DownloadChecker(webapp2.RequestHandler):
             logging.info(stat_file)
             status = json.loads(stat_file)
             if status['status'] != "completed":
-                initiate_download(status)
+                url = status['url']
+                size = status['size']
+                index = status['last_block']
+                filename = status['filename']
+                start = []
+                end = []
+                BLOCK_SIZE = 1000 * 1000 * 5  # 2000K Bytes per block
+                if size > 0:
+                    # split the content into several parts: #BLOCK_SIZE per block.
+                    blockNum = size / BLOCK_SIZE
+                    lastBlock = size % BLOCK_SIZE
+
+                    for i in range(0, blockNum + 1):
+                        start_byte = BLOCK_SIZE * i
+                        end_byte = start_byte + BLOCK_SIZE - 1
+
+                        if end_byte > size - 1:
+                            end_byte = size - 1
+
+                        if start_byte < end_byte:
+                            start.append(start_byte)
+                            end.append(end_byte)
+
+                    deferred.defer(
+                        part_download.part_download, url=url,
+                        start=start, end=end, index=index, filename=filename, size=size)
                 logging.info("resuming...")
                 logging.info(str(status))
 
         self.response.write("Successfully started cron")
+
+
+class DownloadHandler(webapp2.RequestHandler):
+    def get(self):
+        from google.appengine.api import urlfetch
+
+        urlfetch.set_default_fetch_deadline(60)
+
+        filename = self.request.GET["filename"]
+        url = self.request.GET["download_url"]
+        start = self.request.GET.get("start")
+        end = self.request.GET.get("end")
+
+        # logging.info(filename)
+        logging.info(url)
+        if start and end:
+            r1 = requests.get(url,
+                              headers={"Range": "bytes=%s-%s" % (start, end)})
+        else:
+            r1 = requests.get(url)
+
+        logging.info("Status Code: %s" % r1.status_code)
+
+        self.response.headers['Content-Type'] = 'application/octet-stream'
+        self.response.headers['Content-Disposition'] = str('attachment; filename=' + str(filename))
+        self.response.out.write(r1.content)
+
+
+class GetInfoHandler(webapp2.RequestHandler):
+    def get(self):
+        from google.appengine.api import urlfetch
+
+        urlfetch.set_default_fetch_deadline(60)
+        url = self.request.GET["download_url"]
+        match = re.search(r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{4})(.*)|http://(\w{0,5}\.\w*\.\w*:\d{4})(.*)", url)
+        hostURL = match.group(1) if match.group(1) else match.group(3)
+        resourceURL = match.group(2) if match.group(2) else match.group(4)
+
+        hostURL = hostURL.replace(" ", "%20")
+        resourceURL = resourceURL.replace(" ", "%20")
+
+        logging.info("hosturl %s" % hostURL)
+        logging.info("resourceurl %s" % resourceURL)
+
+        conn = httplib.HTTPConnection(hostURL)
+        contentLength = getContentLength(conn, resourceURL)
+        self.response.write(contentLength)

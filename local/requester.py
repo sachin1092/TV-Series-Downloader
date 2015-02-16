@@ -88,16 +88,20 @@ def download(series, season, ep):
 
         download_resp = requests.get(
             'http://my-youtube-dl.appspot.com/api/info?url=' + gorilla_url + '&flatten=True')
-        write_to_requester_log(json.loads(download_resp.text)['videos'][0]['url'])
-        my_url = "http://series-downloader.appspot.com/upload?filename=" + series \
-                 + "_s" + str(season) + "e" + str(ep) + "&download_url=" \
-                 + json.loads(download_resp.text)['videos'][0]['url']
+        try:
+            write_to_requester_log(json.loads(download_resp.text)['videos'][0]['url'])
+        except:
+            write_to_requester_log(download_resp)
+        else:
+            my_url = "http://series-downloader.appspot.com/upload?filename=" + series \
+                     + "_s" + str(season) + "e" + str(ep) + "&download_url=" \
+                     + json.loads(download_resp.text)['videos'][0]['url']
 
-        if requests.get(my_url).content == "Success...I guess":
-            config = ConfigReader().get_settings_parser()
-            config.set(series, 'last_episode_downloaded', '{"' + str(season) + '":' + str(ep) + "}")
-            with open('downloader.ini', 'wb') as configfile:
-                config.write(configfile)
+            if requests.get(my_url).content == "Success...I guess":
+                config = ConfigReader().get_settings_parser()
+                config.set(series, 'last_episode_downloaded', '{"' + str(season) + '":' + str(ep) + "}")
+                with open('downloader.ini', 'wb') as configfile:
+                    config.write(configfile)
 
 
 if __name__ == '__main__':
