@@ -1,3 +1,4 @@
+import json
 import string
 import webapp2
 import logging
@@ -6,7 +7,9 @@ import re
 from google.appengine.ext import deferred
 
 # author: me@sachinshinde.com
+from dbupload import DropboxConnection
 from py import part_download
+from py.config import ConfigReader
 
 
 def getContentLength(conn, resourceURL):
@@ -16,7 +19,7 @@ def getContentLength(conn, resourceURL):
     logging.info("Status %s" % str(r1.status))
     logging.info("Reason %s" % str(r1.reason))
 
-    #Note that you must have read the whole response before you can send a new request to the server.
+    # Note that you must have read the whole response before you can send a new request to the server.
     #otherwise you will meet httplib.ResponseNotReady error, even you don't need the body.
     r1.read()
 
@@ -33,10 +36,10 @@ def getContentLength(conn, resourceURL):
 
 
 class UploadHandler(webapp2.RequestHandler):
-
     def get(self):
 
         from google.appengine.api import urlfetch
+
         urlfetch.set_default_fetch_deadline(60)
 
         filename = self.request.GET["filename"]
@@ -63,7 +66,7 @@ class UploadHandler(webapp2.RequestHandler):
         start = []
         end = []
 
-        BLOCK_SIZE = 1000 * 1000 * 2  # 1000K Bytes per block
+        BLOCK_SIZE = 1000 * 1000 * 2  # 2000K Bytes per block
         if contentLength > 0:
             # split the content into several parts: #BLOCK_SIZE per block.
             blockNum = contentLength / BLOCK_SIZE
@@ -87,3 +90,62 @@ class UploadHandler(webapp2.RequestHandler):
                 start=start, end=end, index=0, filename=filename)
 
         self.response.write("Success...I guess")
+
+
+class DownloadListHandler(webapp2.RequestHandler):
+    def get(self):
+
+        action = self.request.GET["action"]
+
+        config_reader = ConfigReader()
+        email = config_reader.get_dropbox_email()
+        password = config_reader.get_dropbox_password()
+
+        # Create the connection
+        conn = DropboxConnection(email, password)
+
+        dirs = conn.ls("/downloads")
+
+        downloads = {}
+
+        if action == "list":
+            downloads["list"] = []
+            for dr in dirs.keys():
+                dr_no_space = dr.replace(" ", "%20")
+                if conn.get_file_data("/downloads/" + dr_no_space, "status") == "completed":
+                    downloads["list"].append(dr_no_space)
+        elif action == "getFiles":
+            downloads["file_list"] = []
+            dr_no_space = str(self.request.GET["dir"]).replace(" ", "%20")
+            try:
+                fls = conn.ls("/downloads/" + dr_no_space)
+            except:
+                fls = conn.ls("/downloads/" + dr_no_space)
+            logging.info(str(fls))
+            for fl in fls.keys():
+                if fl != "status":
+                    downloads["file_list"].append(fl)
+        elif action == "getURL":
+            dr_no_space = str(self.request.GET["dir"]).replace(" ", "%20")
+            fl = str(self.request.GET["file"]).replace(" ", "%20")
+            try:
+                downloads["url"] = (conn.get_public_download_url("/downloads/" + dr_no_space + "/", fl))
+            except:
+                downloads["url"] = (conn.get_public_download_url("/downloads/" + dr_no_space + "/", fl))
+        elif action == "del":
+            dr_no_space = str(self.request.GET["dir"]).replace(" ", "%20")
+            fl = str(self.request.GET["file"]).replace(" ", "%20")
+            try:
+                conn.delete_file("/downloads/" + dr_no_space + "/", fl)
+            except:
+                conn.delete_file("/downloads/" + dr_no_space + "/", fl)
+            self.response.write("Deleted " + fl + " from Dropbox")
+            return
+        elif action == "delFold":
+            dr_no_space = str(self.request.GET["dir"]).replace(" ", "%20")
+            conn.delete_dir("/downloads/" + dr_no_space)
+            self.response.write("Deleted " + dr_no_space + " from Dropbox")
+            return
+
+
+        self.response.write(json.dumps(downloads))

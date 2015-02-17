@@ -5,7 +5,6 @@ import shutil
 import requests
 from google.appengine.ext import deferred
 import webapp2
-import consts
 from config import ConfigReader
 
 # author: me@sachinshinde.com
@@ -30,8 +29,11 @@ def part_download(url, start=[], end=[], index=0, filename="testFile"):
 
     if index == len(start):
         logging.info("Completed... yay!")
+        write_status("completed", filename)
         return
         # merge_ranges(filename, files)
+    elif index == 0:
+        write_status("in progress", filename)
 
     logging.info('thread %s is running' % index)
     try:
@@ -82,3 +84,22 @@ def merge_ranges(fileName, files):
     # file = open(fileName, "wb")
     # file.write(final_file.read())
     # file.close()
+
+
+def write_status(msg, filename):
+    logging.info(msg)
+
+    config_reader = ConfigReader()
+
+    email = config_reader.get_dropbox_email()
+    password = config_reader.get_dropbox_password()
+
+    # Create the connection
+    conn = DropboxConnection(email, password)
+
+    conn.delete_file("/downloads/"+filename, "status")
+
+    # Upload the file
+    conn.upload_file_f(io.BytesIO(msg), "/downloads/"+filename, "status")
+
+    logging.info(conn.get_dir_list("/"+filename))

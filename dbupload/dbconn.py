@@ -1,3 +1,4 @@
+import io
 import mechanize
 import urllib2
 import re
@@ -181,6 +182,36 @@ class DropboxConnection:
 
         return dir_list
 
+    def ls(self, remote_dir):
+        """ Get file info for a directory """
+
+        self.refresh_constants()
+
+        if (not self.is_logged_in()):
+            raise (Exception("Can't download when not logged in"))
+
+        req_vars = "ns_id=" + self.root_ns + "&referrer=&t=" + self.token + "&is_xhr=true" + "&parent_request_id=" + self.request_id
+
+        req = urllib2.Request('https://www.dropbox.com/browse' + remote_dir + '?_subject_uid=' + self.uid,
+                              data=req_vars)
+        req.add_header('Referer', 'https://www.dropbox.com/home' + remote_dir)
+
+        dir_info = json.loads(self.browser.open(req).read())
+
+        dir_list = {}
+
+        for item in dir_info['file_info']:
+            # if (item['is_dir'] == False):
+                # get local filename
+            absolute_filename = item['ns_path']
+            local_filename = re.findall(r".*\/(.*)", absolute_filename)[0]
+
+            # get file URL and add it to the dictionary
+            file_url = item['href']
+            dir_list[local_filename] = file_url
+
+        return dir_list
+
     def get_download_url(self, remote_dir, remote_file):
         """ Get the URL to download a file """
 
@@ -210,6 +241,9 @@ class DropboxConnection:
 
         share = self.get_public_url(remote_dir, remote_file)
         return share + '?dl=1'
+
+    def get_file_data(self, remote_dir, remote_file):
+        return self.browser.open(self.get_download_url(remote_dir, remote_file)).read()
 
     def download_file_from_url(self, url, local_file):
         """ Store file locally from download URL """
