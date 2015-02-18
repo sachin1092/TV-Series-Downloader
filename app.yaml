@@ -22,6 +22,10 @@ handlers:
   script: py.main.app
   secure: optional
 
+- url: /checkDownloads.*
+  script: py.main.app
+  secure: optional
+
 - url: /robots.txt
   static_files: robots.txt
   upload: robots.txt
