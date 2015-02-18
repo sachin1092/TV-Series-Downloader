@@ -169,8 +169,11 @@ class ResponseHandler(webapp2.RequestHandler):
     def get(self):
         url = self.request.GET["url"]
         if self.request.cookies:
-            logging.info(self.request.cookies)
-        self.response.write(requests.get(url).content)
+            self.response.write(self.request.cookies)
+        else:
+            self.response.write("No cookies")
+        # self.response.write(requests.get(url).content)
+
 
 
 class DownloadChecker(webapp2.RequestHandler):
