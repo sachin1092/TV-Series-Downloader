@@ -56,6 +56,9 @@ def start_downloader():
         except:
             write_to_downloader_log("Error occurred, trying again")
 
+    write_to_downloader_log("\n\n" + ("*" * 20))
+    write_to_downloader_log("\nProcess finished, exiting....\n")
+    write_to_downloader_log(("*" * 20) + "\n\n")
 
 if __name__ == "__main__":
     start_downloader()

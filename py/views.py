@@ -88,7 +88,7 @@ class UploadHandler(webapp2.RequestHandler):
 
             deferred.defer(
                 part_download.part_download, url=url,
-                start=start, end=end, index=0, filename=filename)
+                start=start, end=end, index=0, filename=filename, size=contentLength)
 
         self.response.write("Success...I guess")
 
@@ -113,7 +113,7 @@ class DownloadListHandler(webapp2.RequestHandler):
             downloads["list"] = []
             for dr in dirs.keys():
                 dr_no_space = dr.replace(" ", "%20")
-                if conn.get_file_data("/downloads/" + dr_no_space, "status.txt") == "completed":
+                if json.loads(conn.get_file_data("/downloads/" + dr_no_space, "status.txt"))['status'] == "completed":
                     downloads["list"].append(dr_no_space)
         elif action == "getFiles":
             downloads["file_list"] = []

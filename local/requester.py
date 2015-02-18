@@ -51,6 +51,10 @@ def check():
         elif last_season > season:
             write_to_requester_log("Wrong config, Please check")
 
+    write_to_requester_log("\n\n" + ("*" * 20))
+    write_to_requester_log("\nProcess finished, exiting....\n")
+    write_to_requester_log(("*" * 20) + "\n\n")
+
 
 def download(series, season, ep):
 
@@ -93,6 +97,7 @@ def download(series, season, ep):
             config.set(series, 'last_episode_downloaded', "{'"+str(season)+"':"+str(ep)+"}")
             with open('downloader.ini', 'wb') as configfile:
                 config.write(configfile)
+
 
 if __name__ == '__main__':
     check()

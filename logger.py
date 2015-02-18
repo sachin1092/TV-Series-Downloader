@@ -3,7 +3,7 @@ import time
 
 def write_to_log(log_file, msg):
     print msg
-    with open(log_file, "wb") as f:
+    with open(log_file, "a") as f:
         f.write(msg)
         f.close()
 

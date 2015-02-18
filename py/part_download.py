@@ -11,7 +11,7 @@ from config import ConfigReader
 from dbupload import DropboxConnection
 
 
-def part_download(url, start=[], end=[], index=0, filename="testFile"):
+def part_download(url, start=[], end=[], index=0, filename="testFile", size=0):
 
     from google.appengine.api import urlfetch
     urlfetch.set_default_fetch_deadline(60)
@@ -29,11 +29,8 @@ def part_download(url, start=[], end=[], index=0, filename="testFile"):
 
     if index == len(start):
         logging.info("Completed... yay!")
-        write_status("completed", filename)
+        write_status("{'status': 'completed', 'url': " + url + ", 'size':" + str(size) + "}", filename)
         return
-        # merge_ranges(filename, files)
-    elif index == 0:
-        write_status("in progress", filename)
 
     logging.info('thread %s is running' % index)
     try:
@@ -44,6 +41,8 @@ def part_download(url, start=[], end=[], index=0, filename="testFile"):
             part_download, url=url,
             start=start, end=end, index=index, filename=filename)
     else:
+        write_status("{'status': 'in progress', 'url': " + url + ", 'size': " + str(size)
+                     + ", 'last_block': " + str(index) + "}", filename)
         index += 1
         deferred.defer(
             part_download, url=url,
@@ -69,21 +68,9 @@ def partial_download(url, start=[], end=[], index=0, filename="testFile"):
     # Upload the file
     conn.upload_file_f(io.BytesIO(r1.content), "/downloads/"+filename, filename + "_part_" + str(index))
 
+    write_status()
+
     logging.info(conn.get_dir_list("/downloads/"+filename))
-
-
-def merge_ranges(fileName, files):
-    global final_file
-    final_file = io.BytesIO("")
-    for f in files.values():
-        shutil.copyfileobj(f, final_file, 65536)
-
-    final_file.seek(0, os.SEEK_END)
-    print "final file size", final_file.tell()
-    # final_file.seek(0)
-    # file = open(fileName, "wb")
-    # file.write(final_file.read())
-    # file.close()
 
 
 def write_status(msg, filename):
