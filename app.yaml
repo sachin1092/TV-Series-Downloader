@@ -18,6 +18,10 @@ handlers:
   script: py.main.app
   secure: optional
 
+- url: /getURLResponse.*
+  script: py.main.app
+  secure: optional
+
 - url: /robots.txt
   static_files: robots.txt
   upload: robots.txt

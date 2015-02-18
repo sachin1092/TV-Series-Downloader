@@ -1,4 +1,5 @@
 import io
+import logging
 import mechanize
 import urllib2
 import re
@@ -210,6 +211,8 @@ class DropboxConnection:
             file_url = item['href']
             dir_list[local_filename] = file_url
 
+        logging.info(str(dir_list))
+
         return dir_list
 
     def get_download_url(self, remote_dir, remote_file):
@@ -241,6 +244,24 @@ class DropboxConnection:
 
         share = self.get_public_url(remote_dir, remote_file)
         return share + '?dl=1'
+
+    def get_public_download_url_dir(self, remote_dir):
+        """ Share file and get the URL to download it publicly """
+        self.refresh_constants()
+
+        if (not self.is_logged_in()):
+            raise (Exception("Can't download when not logged in"))
+
+        req_vars = "origin=browse_file_row&t=" + self.token + "&is_xhr=true&_subject_uid=" + self.uid
+        req = urllib2.Request('https://www.dropbox.com/sm/share_link/' + remote_dir, data=req_vars)
+        req.add_header('Referer', 'https://www.dropbox.com/home' + remote_dir)
+
+        share_info = json.loads(self.browser.open(req).read())
+
+        html = share_info['actions'][0][1]
+
+        fname = html.split('"https://www.dropbox.com/sh/')[1].split('?dl=0')[0]
+        return 'https://www.dropbox.com/sh/' + fname + '?dl=1'
 
     def get_file_data(self, remote_dir, remote_file):
         return self.browser.open(self.get_download_url(remote_dir, remote_file)).read()

@@ -1,4 +1,5 @@
 import json
+import requests
 import string
 import webapp2
 import logging
@@ -112,7 +113,7 @@ class DownloadListHandler(webapp2.RequestHandler):
             downloads["list"] = []
             for dr in dirs.keys():
                 dr_no_space = dr.replace(" ", "%20")
-                if conn.get_file_data("/downloads/" + dr_no_space, "status") == "completed":
+                if conn.get_file_data("/downloads/" + dr_no_space, "status.txt") == "completed":
                     downloads["list"].append(dr_no_space)
         elif action == "getFiles":
             downloads["file_list"] = []
@@ -123,7 +124,7 @@ class DownloadListHandler(webapp2.RequestHandler):
                 fls = conn.ls("/downloads/" + dr_no_space)
             logging.info(str(fls))
             for fl in fls.keys():
-                if fl != "status":
+                if fl != "status.txt":
                     downloads["file_list"].append(fl)
         elif action == "getURL":
             dr_no_space = str(self.request.GET["dir"]).replace(" ", "%20")
@@ -132,6 +133,12 @@ class DownloadListHandler(webapp2.RequestHandler):
                 downloads["url"] = (conn.get_public_download_url("/downloads/" + dr_no_space + "/", fl))
             except:
                 downloads["url"] = (conn.get_public_download_url("/downloads/" + dr_no_space + "/", fl))
+        elif action == "getDirURL":
+            dr_no_space = str(self.request.GET["dir"]).replace(" ", "%20")
+            try:
+                downloads["url"] = (conn.get_public_download_url_dir("/downloads/" + dr_no_space + "/"))
+            except:
+                downloads["url"] = (conn.get_public_download_url_dir("/downloads/" + dr_no_space + "/"))
         elif action == "del":
             dr_no_space = str(self.request.GET["dir"]).replace(" ", "%20")
             fl = str(self.request.GET["file"]).replace(" ", "%20")
@@ -147,5 +154,11 @@ class DownloadListHandler(webapp2.RequestHandler):
             self.response.write("Deleted " + dr_no_space + " from Dropbox")
             return
 
-
         self.response.write(json.dumps(downloads))
+
+
+class ResponseHandler(webapp2.RequestHandler):
+
+    def get(self):
+        url = self.request.GET["url"]
+        self.response.write(requests.get(url).content)

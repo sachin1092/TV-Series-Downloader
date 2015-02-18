@@ -69,7 +69,7 @@ def partial_download(url, start=[], end=[], index=0, filename="testFile"):
     # Upload the file
     conn.upload_file_f(io.BytesIO(r1.content), "/downloads/"+filename, filename + "_part_" + str(index))
 
-    logging.info(conn.get_dir_list("/"+filename))
+    logging.info(conn.get_dir_list("/downloads/"+filename))
 
 
 def merge_ranges(fileName, files):
@@ -97,9 +97,9 @@ def write_status(msg, filename):
     # Create the connection
     conn = DropboxConnection(email, password)
 
-    conn.delete_file("/downloads/"+filename, "status")
+    conn.delete_file("/downloads/"+filename, "status.txt")
 
     # Upload the file
-    conn.upload_file_f(io.BytesIO(msg), "/downloads/"+filename, "status")
+    conn.upload_file_f(io.BytesIO(msg), "/downloads/"+filename, "status.txt")
 
-    logging.info(conn.get_dir_list("/"+filename))
+    logging.info(conn.get_dir_list("/downloads/"+filename))
