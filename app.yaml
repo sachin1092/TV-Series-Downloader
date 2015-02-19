@@ -57,3 +57,4 @@ skip_files:
 - ^test/.*$
 - ^devscripts/.*$
 - ^local/.$
+- ^venv.*$

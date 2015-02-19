@@ -1,7 +1,9 @@
 import io
+import json
 import logging
 import os
 import shutil
+import re
 import requests
 from google.appengine.ext import deferred
 import webapp2
@@ -29,7 +31,11 @@ def part_download(url, start=[], end=[], index=0, filename="testFile", size=0):
 
     if index == len(start):
         logging.info("Completed... yay!")
-        write_status("{'status': 'completed', 'url': " + url + ", 'size':" + str(size) + "}", filename)
+        status = {'status': 'completed', 'url': 'url', 'size': size,
+                  'ext': str(re.search("\.*.*(\.[a-zA-Z0-9]+)", url).group(1))}
+        # "{'status': 'completed', 'url': " + url + ", 'size':"
+        #              + str(size) + ", 'ext': " + str(re.search("\.*.*(\.[a-zA-Z0-9]+)", url).group(1)) + "}"
+        write_status(json.dumps(status), filename)
         return
 
     logging.info('thread %s is running' % index)
@@ -41,8 +47,12 @@ def part_download(url, start=[], end=[], index=0, filename="testFile", size=0):
             part_download, url=url,
             start=start, end=end, index=index, filename=filename)
     else:
-        write_status("{'status': 'in progress', 'url': " + url + ", 'size': " + str(size)
-                     + ", 'last_block': " + str(index) + "}", filename)
+        status = {'status': 'in progress', 'url': url, 'size': size, 'last_block': index,
+                  'ext': str(re.search("\.*.*(\.[a-zA-Z0-9]+)", url).group(1))}
+        # "{'status': 'in progress', 'url': " + url + ", 'size': "
+        #              + str(size) + ", 'last_block': " + str(index) + ", 'ext': "
+        #              + str(re.search("\.*.*(\.[a-zA-Z0-9]+)", url).group(1)) + "}"
+        write_status(json.dumps(status), filename)
         index += 1
         deferred.defer(
             part_download, url=url,
@@ -88,5 +98,3 @@ def write_status(msg, filename):
 
     # Upload the file
     conn.upload_file_f(io.BytesIO(msg), "/downloads/"+filename, "status.txt")
-
-    logging.info(conn.get_dir_list("/downloads/"+filename))

@@ -21,7 +21,7 @@ def getContentLength(conn, resourceURL):
     logging.info("Reason %s" % str(r1.reason))
 
     # Note that you must have read the whole response before you can send a new request to the server.
-    #otherwise you will meet httplib.ResponseNotReady error, even you don't need the body.
+    # otherwise you will meet httplib.ResponseNotReady error, even you don't need the body.
     r1.read()
 
     content_length = 0
@@ -84,6 +84,10 @@ class UploadHandler(webapp2.RequestHandler):
                     start.append(start_byte)
                     end.append(end_byte)
 
+            status = {'status': 'in progress', 'url': url, 'size': contentLength, 'last_block': -1,
+                      'ext': str(re.search("\.*.*(\.[a-zA-Z0-9]+)", url).group(1))}
+
+            part_download.write_status(status, filename)
             logging.info("Starting the defer..YO!!")
 
             deferred.defer(
@@ -105,12 +109,11 @@ class DownloadListHandler(webapp2.RequestHandler):
         # Create the connection
         conn = DropboxConnection(email, password)
 
-        dirs = conn.ls("/downloads")
-
         downloads = {}
 
         if action == "list":
             downloads["list"] = []
+            dirs = conn.ls("/downloads")
             for dr in dirs.keys():
                 dr_no_space = dr.replace(" ", "%20")
                 if json.loads(conn.get_file_data("/downloads/" + dr_no_space, "status.txt"))['status'] == "completed":
@@ -158,13 +161,25 @@ class DownloadListHandler(webapp2.RequestHandler):
 
 
 class ResponseHandler(webapp2.RequestHandler):
-
     def get(self):
         url = self.request.GET["url"]
         self.response.write(requests.get(url).content)
 
 
 class DownloadChecker(webapp2.RequestHandler):
-
     def get(self):
         logging.info("Running downloader checker cron")
+
+        config_reader = ConfigReader()
+        email = config_reader.get_dropbox_email()
+        password = config_reader.get_dropbox_password()
+
+        # Create the connection
+        conn = DropboxConnection(email, password)
+        dirs = conn.ls("/downloads")
+        downloads = {"list": []}
+        for dr in dirs.keys():
+            dr_no_space = dr.replace(" ", "%20")
+            status = json.loads(conn.get_file_data("/downloads/" + dr_no_space, "status.txt"))
+            if status['status'] != "completed":
+                downloads["list"].append(dr_no_space)
