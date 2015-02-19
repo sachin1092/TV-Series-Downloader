@@ -11,6 +11,7 @@ from google.appengine.ext import deferred
 from dbupload import DropboxConnection
 from py import part_download
 from py.config import ConfigReader
+from py.check_downloads import initiate_download
 
 
 def getContentLength(conn, resourceURL):
@@ -177,9 +178,10 @@ class DownloadChecker(webapp2.RequestHandler):
         # Create the connection
         conn = DropboxConnection(email, password)
         dirs = conn.ls("/downloads")
-        downloads = {"list": []}
         for dr in dirs.keys():
             dr_no_space = dr.replace(" ", "%20")
             status = json.loads(conn.get_file_data("/downloads/" + dr_no_space, "status.txt"))
             if status['status'] != "completed":
-                downloads["list"].append(dr_no_space)
+                initiate_download(status)
+                logging.info("resuming...")
+                logging.info(str(status))

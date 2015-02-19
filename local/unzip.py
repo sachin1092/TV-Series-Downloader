@@ -18,8 +18,8 @@ def unzip(fl):
     match = re.search("(.*)_s(\d{1,2})", path_list[-1])
     series_name = match.group(1)
     season = match.group(2)
-    zipfile.ZipFile(fl).extractall(f_path + "/" + series_name.title() + "/Season " + str(season))
-    merge(f_path + "/" + series_name.title() + "/Season " + str(season), path_list[-1])
+    zipfile.ZipFile(fl).extractall(f_path + "/" + series_name.title().replace("_", " ") + "/Season " + str(season))
+    merge(f_path + "/" + series_name.title().replace("_", " ") + "/Season " + str(season), path_list[-1])
     os.remove(fl)
 
 
@@ -44,4 +44,4 @@ def merge(m_path, f_name):
 
 if __name__ == '__main__':
 
-    unzip('/home/sachin/Series-Downloads/suits_s4e11.zip')
+    unzip('/home/sachin/Series-Downloads/big_bang_theory_s8e11.zip')

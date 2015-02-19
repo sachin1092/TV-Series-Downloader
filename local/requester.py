@@ -1,5 +1,6 @@
 if __name__ == '__main__' and __package__ is None:
     from os import sys, path
+
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from logger import write_to_requester_log
@@ -22,11 +23,12 @@ def check():
     for series in series_list:
 
         write_to_requester_log("\n")
-        write_to_requester_log("*"*50)
+        write_to_requester_log("*" * 50)
 
         last_season = int(json.loads(config.get(series, "last_episode_downloaded")).keys()[0])
         last_episode = int(json.loads(config.get(series, "last_episode_downloaded")).values()[0])
-        write_to_requester_log("Last Episode Downloaded of " + series + "is S" + str(last_season) + "E" + str(last_episode))
+        write_to_requester_log(
+            "Last Episode Downloaded of " + series + "is S" + str(last_season) + "E" + str(last_episode))
         write_to_requester_log("Checking if new episode came")
         series_url = base_url + '/serie/' + series
         page = m_requests.get(series_url)
@@ -57,15 +59,14 @@ def check():
 
 
 def download(series, season, ep):
-
     write_to_requester_log("\n")
-    write_to_requester_log("-"*40)
+    write_to_requester_log("-" * 40)
 
     write_to_requester_log("Will request download of " + series + " Season " + str(season) + " Episode " + str(ep))
     episode_page = m_requests.get("http://watch-tv-series.to/episode/"
-                                + series + "_s" + str(season) + "_e" + str(ep) + ".html")
+                                  + series + "_s" + str(season) + "_e" + str(ep) + ".html")
     write_to_requester_log("Requesting URL http://watch-tv-series.to/episode/"
-                            + series + "_s" + str(season) + "_e" + str(ep) + ".html")
+                           + series + "_s" + str(season) + "_e" + str(ep) + ".html")
 
     sleep(1)
 
@@ -89,12 +90,12 @@ def download(series, season, ep):
             'http://my-youtube-dl.appspot.com/api/info?url=' + gorilla_url + '&flatten=True')
         write_to_requester_log(json.loads(download_resp.text)['videos'][0]['url'])
         my_url = "http://series-downloader.appspot.com/upload?filename=" + series \
-                 + "_s" + str(season) + "e" + str(ep) +"&download_url=" \
+                 + "_s" + str(season) + "e" + str(ep) + "&download_url=" \
                  + json.loads(download_resp.text)['videos'][0]['url']
 
         if requests.get(my_url).content == "Success...I guess":
             config = ConfigReader().get_settings_parser()
-            config.set(series, 'last_episode_downloaded', "{'"+str(season)+"':"+str(ep)+"}")
+            config.set(series, 'last_episode_downloaded', "{'" + str(season) + "':" + str(ep) + "}")
             with open('downloader.ini', 'wb') as configfile:
                 config.write(configfile)
 
