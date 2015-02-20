@@ -27,5 +27,5 @@ def initiate_download(status):
                 end.append(end_byte)
 
     deferred.defer(
-        part_download, url=url,
+        part_download.part_download, url=url,
         start=start, end=end, index=index, filename=filename, size=size)

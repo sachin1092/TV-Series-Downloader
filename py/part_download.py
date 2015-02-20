@@ -31,7 +31,7 @@ def part_download(url, start=[], end=[], index=0, filename="testFile", size=0):
 
     if index == len(start):
         logging.info("Completed... yay!")
-        status = {'status': 'completed', 'url': 'url', 'size': size,
+        status = {'status': 'completed', 'url': url, 'size': size,
                   'ext': str(re.search("\.*.*(\.[a-zA-Z0-9]+)", url).group(1))}
         # "{'status': 'completed', 'url': " + url + ", 'size':"
         #              + str(size) + ", 'ext': " + str(re.search("\.*.*(\.[a-zA-Z0-9]+)", url).group(1)) + "}"
@@ -45,7 +45,7 @@ def part_download(url, start=[], end=[], index=0, filename="testFile", size=0):
         logging.info('thread %s failed, running again' % index)
         deferred.defer(
             part_download, url=url,
-            start=start, end=end, index=index, filename=filename)
+            start=start, end=end, index=index, filename=filename, size=size)
     else:
         status = {'status': 'in progress', 'url': url, 'size': size, 'last_block': index,
                   'ext': str(re.search("\.*.*(\.[a-zA-Z0-9]+)", url).group(1))}
@@ -56,7 +56,7 @@ def part_download(url, start=[], end=[], index=0, filename="testFile", size=0):
         index += 1
         deferred.defer(
             part_download, url=url,
-            start=start, end=end, index=index, filename=filename)
+            start=start, end=end, index=index, filename=filename, size=size)
 
 
 def partial_download(url, start=[], end=[], index=0, filename="testFile"):
@@ -77,10 +77,6 @@ def partial_download(url, start=[], end=[], index=0, filename="testFile"):
 
     # Upload the file
     conn.upload_file_f(io.BytesIO(r1.content), "/downloads/"+filename, filename + "_part_" + str(index))
-
-    write_status()
-
-    logging.info(conn.get_dir_list("/downloads/"+filename))
 
 
 def write_status(msg, filename):

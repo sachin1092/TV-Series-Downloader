@@ -1,17 +1,12 @@
-
 if __name__ == '__main__' and __package__ is None:
     from os import sys, path
 
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from subprocess import call
-import io
 import json
-import os
-import shutil
-import re
 from os.path import expanduser
-
+from local import unzip
 import requests
 
 from logger import write_to_downloader_log
@@ -38,8 +33,13 @@ def start_download():
             "http://series-downloader.appspot.com/getDownloadList?action=getDirURL&dir=" + fold).content)["url"]
         write_to_downloader_log(url)
         call(["wget", "-c", "-O", home + "/Series-Downloads/" + my_fold + ".zip", url])
+
+        unzip.unzip(home + "/Series-Downloads/" + my_fold + ".zip")
+
+        write_to_downloader_log("Deleting the remote folder")
         write_to_downloader_log(requests.get("http://series-downloader.appspot.com/getDownloadList?action=delFold&dir="
                                              + fold).content)
+
         completed[fold] = True
 
 

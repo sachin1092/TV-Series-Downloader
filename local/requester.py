@@ -28,7 +28,7 @@ def check():
         last_season = int(json.loads(config.get(series, "last_episode_downloaded")).keys()[0])
         last_episode = int(json.loads(config.get(series, "last_episode_downloaded")).values()[0])
         write_to_requester_log(
-            "Last Episode Downloaded of " + series + "is S" + str(last_season) + "E" + str(last_episode))
+            "Last Episode Downloaded of " + series + " is S" + str(last_season) + "E" + str(last_episode))
         write_to_requester_log("Checking if new episode came")
         series_url = base_url + '/serie/' + series
         page = m_requests.get(series_url)
@@ -95,7 +95,7 @@ def download(series, season, ep):
 
         if requests.get(my_url).content == "Success...I guess":
             config = ConfigReader().get_settings_parser()
-            config.set(series, 'last_episode_downloaded', "{'" + str(season) + "':" + str(ep) + "}")
+            config.set(series, 'last_episode_downloaded', '{"' + str(season) + '":' + str(ep) + "}")
             with open('downloader.ini', 'wb') as configfile:
                 config.write(configfile)
 

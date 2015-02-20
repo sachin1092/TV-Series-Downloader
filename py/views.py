@@ -88,7 +88,7 @@ class UploadHandler(webapp2.RequestHandler):
             status = {'status': 'in progress', 'url': url, 'size': contentLength, 'last_block': -1,
                       'ext': str(re.search("\.*.*(\.[a-zA-Z0-9]+)", url).group(1))}
 
-            part_download.write_status(status, filename)
+            part_download.write_status(json.dumps(status), filename)
             logging.info("Starting the defer..YO!!")
 
             deferred.defer(
@@ -180,8 +180,12 @@ class DownloadChecker(webapp2.RequestHandler):
         dirs = conn.ls("/downloads")
         for dr in dirs.keys():
             dr_no_space = dr.replace(" ", "%20")
-            status = json.loads(conn.get_file_data("/downloads/" + dr_no_space, "status.txt"))
+            stat_file = conn.get_file_data("/downloads/" + dr_no_space, "status.txt")
+            logging.info(stat_file)
+            status = json.loads(stat_file)
             if status['status'] != "completed":
                 initiate_download(status)
                 logging.info("resuming...")
                 logging.info(str(status))
+
+        self.response.write("Successfully started cron")
