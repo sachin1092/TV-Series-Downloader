@@ -1,3 +1,5 @@
+import re
+
 if __name__ == '__main__' and __package__ is None:
     from os import sys, path
 
@@ -24,7 +26,6 @@ def start_download():
     write_to_downloader_log(downloads)
 
     for fold in downloads["list"]:
-
         completed[fold] = False
 
         my_fold = fold.replace("%20", " ")
@@ -37,8 +38,17 @@ def start_download():
         unzip.unzip(home + "/Series-Downloads/" + my_fold + ".zip")
 
         write_to_downloader_log("Deleting the remote folder")
-        write_to_downloader_log(requests.get("http://series-downloader.appspot.com/getDownloadList?action=delFold&dir="
-                                             + fold).content)
+        delete_resp = requests.get("http://series-downloader.appspot.com/getDownloadList?action=delFold&dir="
+                                   + fold).content
+        write_to_downloader_log(delete_resp)
+
+        if re.search("Dropbox", delete_resp):
+            write_to_downloader_log("Error occurred while deleting so trying again.")
+            delete_resp = requests.get("http://series-downloader.appspot.com/getDownloadList?action=delFold&dir="
+                                       + fold).content
+            write_to_downloader_log(delete_resp)
+
+
 
         completed[fold] = True
 
@@ -59,6 +69,7 @@ def start_downloader():
     write_to_downloader_log("\n\n" + ("*" * 20))
     write_to_downloader_log("\nProcess finished, exiting....\n")
     write_to_downloader_log(("*" * 20) + "\n\n")
+
 
 if __name__ == "__main__":
     start_downloader()

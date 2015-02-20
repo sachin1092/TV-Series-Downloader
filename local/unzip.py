@@ -1,4 +1,3 @@
-
 if __name__ == '__main__' and __package__ is None:
     from os import sys, path
 
@@ -31,8 +30,10 @@ def merge(m_path, f_name):
     if os.path.isfile(m_path + "/status.txt"):
         os.remove(m_path + "/status.txt")
     for f in range(len(os.listdir(m_path))):
-        shutil.copyfileobj(open(m_path + "/" + file_name.replace(" ", "_").lower() + "_part_" + str(f), "r"), final_file,
-                           65536)
+        if os.path.isfile(m_path + "/" + file_name.replace(" ", "_").lower() + "_part_" + str(f)):
+            shutil.copyfileobj(open(m_path + "/" + file_name.replace(" ", "_").lower() + "_part_" + str(f), "r"),
+                               final_file,
+                               65536)
     final_file.seek(0, os.SEEK_END)
     write_to_downloader_log("file " + file_name + ".mp4 saved with size " + str(final_file.tell()))
     final_file.seek(0)
@@ -40,8 +41,9 @@ def merge(m_path, f_name):
     fl.write(final_file.read())
     fl.close()
     for f in range(len(os.listdir(m_path)) - 1):
-        os.remove(m_path + "/" + file_name.replace(" ", "_").lower() + "_part_" + str(f))
+        if os.path.isfile(m_path + "/" + file_name.replace(" ", "_").lower() + "_part_" + str(f)):
+            os.remove(m_path + "/" + file_name.replace(" ", "_").lower() + "_part_" + str(f))
+
 
 if __name__ == '__main__':
-
     unzip('/home/sachin/Series-Downloads/big_bang_theory_s8e11.zip')
