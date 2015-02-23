@@ -168,11 +168,13 @@ class DownloadListHandler(webapp2.RequestHandler):
 class ResponseHandler(webapp2.RequestHandler):
     def get(self):
         url = self.request.GET["url"]
-        if self.request.headers:
-            self.response.write(self.request.headers)
-        else:
-            self.response.write("No headers")
-        # self.response.write(requests.get(url).content)
+        if self.request.cookies and self.request.headers:
+            self.response.write(requests.get(url, cookies=self.request.cookies, headers=self.request.headers).content)
+        elif self.request.cookies:
+            self.response.write(requests.get(url, cookies=self.request.cookies).content)
+        elif self.request.headers:
+            self.response.write(requests.get(url, headers=self.request.headers).content)
+        self.response.write(requests.get(url).content)
 
 
 
