@@ -177,7 +177,6 @@ class ResponseHandler(webapp2.RequestHandler):
         self.response.write(requests.get(url).content)
 
 
-
 class DownloadChecker(webapp2.RequestHandler):
     def get(self):
         logging.info("Running downloader checker cron")

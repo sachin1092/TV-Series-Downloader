@@ -75,3 +75,6 @@ crashlytics-build.properties
 
 # conf file
 *.conf
+
+#log files
+*.log
