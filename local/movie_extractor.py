@@ -95,7 +95,17 @@ def extract_movie_info(movie):
     print result
     video_request = requests.get(base_url + result[0])
     video_page = html.fromstring(video_request.text)
-    print video_page.xpath('/html/body/div[2]/div[2]/div[5]/div[3]')[0].values()
+    import re
+    number_of_urls = re.findall('</table>', video_request.text)
+    print len(number_of_urls)
+    video_urls = []
+    try:
+        for i in xrange(1, len(number_of_urls)):
+            vid_xpath = '/html/body/div[2]/div[2]/div[5]/div[3]/table[%d]/tbody/tr/td[2]/strong/a' % i
+            video_urls.append(video_page.xpath(vid_xpath)[0].values()[0])
+    except:
+        import traceback
+        traceback.print_exc()
 
 
 
