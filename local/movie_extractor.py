@@ -100,12 +100,14 @@ def extract_movie_info(movie):
     print len(number_of_urls)
     video_urls = []
     try:
-        for i in xrange(1, len(number_of_urls)):
+        for i in xrange(1, len(number_of_urls) + 1):
+            print i
             vid_xpath = '/html/body/div[2]/div[2]/div[5]/div[3]/table[%d]/tbody/tr/td[2]/strong/a' % i
             video_urls.append(video_page.xpath(vid_xpath)[0].values()[0])
     except:
         import traceback
         traceback.print_exc()
+    print video_urls
 
 
 
