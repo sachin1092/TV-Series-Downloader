@@ -16,11 +16,6 @@ __author__ = 'sachin'
 
 import traceback
 
-def get_redirected_url(url):
-    req = requests.get(url)
-    return req.url
-
-
 def extract_movie_info(movie):
     base_url = 'http://www.watchfree.to'
     search_url = '/?keyword=%s&search_section=1'
@@ -48,10 +43,6 @@ def extract_movie_info(movie):
         print "*"*50
         print "\n\n\n"
         print 'requesting', base_url + vid_url
-        # try:
-        #     print get_redirected_url(base_url + vid_url)
-        # except:
-        #     traceback.print_exc()
         print requests.get(
             'http://my-youtube-dl.appspot.com/api/info?url=' + base_url + vid_url + '&flatten=True').text
 
