@@ -2,6 +2,8 @@ import logging
 import os
 import string
 import time
+import json
+import re
 
 if __name__ == '__main__':
     from os import sys, path
@@ -27,7 +29,6 @@ def extract_movie_info(movie):
     print result
     video_request = requests.get(base_url + result[0])
     video_page = html.fromstring(video_request.text)
-    import re
     number_of_urls = re.findall('</table>', video_request.text)
     print len(number_of_urls)
     video_urls = []
@@ -43,8 +44,12 @@ def extract_movie_info(movie):
         print "*"*50
         print "\n\n\n"
         print 'requesting', base_url + vid_url
-        print requests.get(
-            'http://my-youtube-dl.appspot.com/api/info?url=' + base_url + vid_url + '&flatten=True').text
+        downld_json = json.loads(requests.get('http://my-youtube-dl.appspot.com/api/info?url=' 
+            + base_url + vid_url + '&flatten=True').text)
+        if downld_json.get('videos') is not None:
+            print downld_json.get('videos')[0].get('url')
+            print downld_json.get('videos')[0].get('title')
+            break
 
 
 
