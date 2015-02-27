@@ -55,8 +55,6 @@ def extract_movie_info(movie, skip_urls=None):
             traceback.print_exc()
     return {'error': 'no vid found'}
 
-
-
 if __name__ == '__main__':
     movie = raw_input("Enter movie to download: ")
     write_to_requester_log(extract_movie_info(movie))
