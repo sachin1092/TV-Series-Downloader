@@ -39,18 +39,3 @@ if __name__ == "__main__":
         file_name = raw_input("Enter file name to download subtitles: ")
 
     download_sub(file_name, '/home/sachin/My-Downloads/')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
