@@ -37,7 +37,6 @@ def extract_movie_info(movie, skip_urls=None):
             video_urls.append(video_page.xpath(vid_xpath)[0].values()[0])
     except:
         traceback.print_exc()
-    write_to_requester_log(video_urls)
     for vid_url in video_urls:
         if skip_urls and vid_url in skip_urls:
             continue
