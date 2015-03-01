@@ -40,8 +40,8 @@ def extract_movie_info(movie, skip_urls=None):
     for vid_url in video_urls:
         if skip_urls and vid_url in skip_urls:
             continue
-        write_to_requester_log("*"*50)
         write_to_requester_log("\n\n\n")
+        write_to_requester_log("-"*50)
         write_to_requester_log('requesting ' + base_url + vid_url)
         try:
             downld_json = json.loads(requests.get('http://my-youtube-dl.appspot.com/api/info?url=' 
