@@ -12,6 +12,7 @@ if __name__ == '__main__':
 
 from lxml import html
 import m_requests
+import requests
 from time import sleep
 from logger import write_to_requester_log
 
@@ -20,6 +21,8 @@ __author__ = 'sachin'
 import traceback
 
 def extract_episode_info(series, season, ep):
+
+    base_url = 'http://watch-tv-series.to'
 
     write_to_requester_log("\n")
     write_to_requester_log("-" * 40)
@@ -49,9 +52,9 @@ def extract_episode_info(series, season, ep):
 
         try:
 
-            download_resp = requests.get(
-                'http://my-youtube-dl.appspot.com/api/info?url=' + gorilla_url + '&flatten=True')        
-            
+            download_resp = json.loads(requests.get(
+                'http://my-youtube-dl.appspot.com/api/info?url=' + gorilla_url + '&flatten=True').text)
+            print download_resp
             if download_resp.get('videos') is not None:
                 return {'title': download_resp.get('videos')[0].get('title'), 
                     'download_url': download_resp.get('videos')[0].get('url'),
