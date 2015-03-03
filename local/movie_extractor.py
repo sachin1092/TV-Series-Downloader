@@ -12,6 +12,7 @@ if __name__ == '__main__':
 
 from lxml import html
 import requests
+import m_requests
 from logger import write_to_requester_log
 
 __author__ = 'sachin'
@@ -24,10 +25,10 @@ def extract_movie_info(movie, skip_urls=None):
     search_url = '/?keyword=%s&search_section=1'
     url = base_url + search_url % movie
     write_to_requester_log(url)
-    search_request = requests.get(url)
+    search_request = m_requests.get(url)
     search_page = html.fromstring(search_request.text)
     result = search_page.xpath('/html/body/div/div[2]/div[3]/a')[0].values()
-    video_request = requests.get(base_url + result[0])
+    video_request = m_requests.get(base_url + result[0])
     video_page = html.fromstring(video_request.text)
     number_of_urls = re.findall('</table>', video_request.text)
     video_urls = []
