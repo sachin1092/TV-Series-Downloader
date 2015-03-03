@@ -35,32 +35,35 @@ def extract_episode_info(series, season, ep):
 
     sleep(1)
     episode_tree = html.fromstring(episode_page.text)
-    try:
-        video_url = base_url + episode_tree.xpath('//*[@id="myTable"]/tbody/tr[2]/td[2]/a')[0].values()[1]
-    except IndexError:
-        write_to_requester_log("No videos for this epiosde")
-    else:
-        write_to_requester_log(video_url)
-
-        sleep(1)
-
-        video_page = m_requests.get(video_url)
-        video_tree = html.fromstring(video_page.text)
-        gorilla_url = \
-            video_tree.xpath('/html/body/div[3]/div[2]/div/div[2]/div/div/div/div/div/div/div/a')[0].values()[0]
-        write_to_requester_log(gorilla_url)
-
+    number_of_urls = re.findall('</tr>', episode_page.text)
+    print "number of urls are %d" % len(number_of_urls)
+    for i in xrange(2, len(number_of_urls)):
         try:
+            xpath = '//*[@id="myTable"]/tbody/tr[%d]/td[2]/a' % i
+            video_url = base_url + episode_tree.xpath(xpath)[0].values()[1]
+        except IndexError:
+            write_to_requester_log("No videos for this epiosde")
+        else:
+            write_to_requester_log(video_url)
 
-            download_resp = json.loads(requests.get(
-                'http://my-youtube-dl.appspot.com/api/info?url=' + gorilla_url + '&flatten=True').text)
-            print download_resp
-            if download_resp.get('videos') is not None:
-                return {'title': download_resp.get('videos')[0].get('title'), 
-                    'download_url': download_resp.get('videos')[0].get('url'),
-                    'url': gorilla_url}
-        except:
-            traceback.print_exc()
+            sleep(1)
+
+            video_page = m_requests.get(video_url)
+            video_tree = html.fromstring(video_page.text)
+            gorilla_url = \
+                video_tree.xpath('/html/body/div[3]/div[2]/div/div[2]/div/div/div/div/div/div/div/a')[0].values()[0]
+            write_to_requester_log(gorilla_url)
+
+            try:
+
+                download_resp = json.loads(requests.get(
+                    'http://my-youtube-dl.appspot.com/api/info?url=' + gorilla_url + '&flatten=True').text)
+                if download_resp.get('videos') is not None:
+                    return {'title': download_resp.get('videos')[0].get('title'), 
+                        'download_url': download_resp.get('videos')[0].get('url'),
+                        'url': gorilla_url}
+            except:
+                traceback.print_exc()
     return {'error': 'no vid found'}
 
 if __name__ == '__main__':
