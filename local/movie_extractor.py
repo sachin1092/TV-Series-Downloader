@@ -19,7 +19,7 @@ __author__ = 'sachin'
 
 import traceback
 
-def extract_movie_info(movie, skip_urls=None):
+def extract_movie_info(movie, skip_urls=None, quality='[DVD]'):
     movie = movie.replace(" ", "+")
     base_url = 'http://www.watchfree.to'
     search_url = '/?keyword=%s&search_section=1'
@@ -35,8 +35,8 @@ def extract_movie_info(movie, skip_urls=None):
     try:
         for i in xrange(1, len(number_of_urls)):
             vid_xpath = '/html/body/div[2]/div[2]/div[5]/div[3]/table[%d]/tbody/tr/td[2]/strong/a' % i
-            quality = video_page.xpath('/html/body/div[2]/div[2]/div[5]/div[3]/table[%d]/tbody/tr/td[1]/div' % i)[0].text
-            if quality == '[CAM]':
+            vid_quality = video_page.xpath('/html/body/div[2]/div[2]/div[5]/div[3]/table[%d]/tbody/tr/td[1]/div' % i)[0].text
+            if vid_quality != quality:
                 continue
             video_urls.append(video_page.xpath(vid_xpath)[0].values()[0])
     except:
