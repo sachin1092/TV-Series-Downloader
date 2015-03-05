@@ -35,9 +35,12 @@ def extract_movie_info(movie, skip_urls=None):
     try:
         for i in xrange(1, len(number_of_urls)):
             vid_xpath = '/html/body/div[2]/div[2]/div[5]/div[3]/table[%d]/tbody/tr/td[2]/strong/a' % i
+            quality = video_page.xpath('/html/body/div[2]/div[2]/div[5]/div[3]/table[%d]/tbody/tr/td[1]/div' % i)[0].text
+            if quality == '[CAM]':
+                continue
             video_urls.append(video_page.xpath(vid_xpath)[0].values()[0])
     except:
-        traceback.print_exc()
+        pass
     for vid_url in video_urls:
         if skip_urls and vid_url in skip_urls:
             continue
@@ -53,7 +56,7 @@ def extract_movie_info(movie, skip_urls=None):
                     'url': vid_url}
         except:
             traceback.print_exc()
-    return {'error': 'no vid found'}
+    return {'error': 'No videos found'}
 
 if __name__ == '__main__':
     movie = raw_input("Enter movie to download: ")
