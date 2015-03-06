@@ -24,7 +24,7 @@ def extract_movie_info(movie, skip_urls=None, quality='[DVD]'):
     base_url = 'http://www.watchfree.to'
     search_url = '/?keyword=%s&search_section=1'
     url = base_url + search_url % movie
-    write_to_requester_log(url)
+    write_to_requester_log(url, False)
     search_request = m_requests.get(url)
     search_page = html.fromstring(search_request.text)
     result = search_page.xpath('/html/body/div/div[2]/div[3]/a')[0].values()
@@ -44,9 +44,9 @@ def extract_movie_info(movie, skip_urls=None, quality='[DVD]'):
     for vid_url in video_urls:
         if skip_urls and vid_url in skip_urls:
             continue
-        write_to_requester_log("\n\n\n")
-        write_to_requester_log("-"*50)
-        write_to_requester_log('requesting ' + base_url + vid_url)
+        write_to_requester_log("\n\n\n", False)
+        write_to_requester_log("-"*50, False)
+        write_to_requester_log('requesting ' + base_url + vid_url, False)
         try:
             downld_json = json.loads(requests.get('http://my-youtube-dl.appspot.com/api/info?url=' 
                 + base_url + vid_url + '&flatten=True').text)
@@ -54,8 +54,8 @@ def extract_movie_info(movie, skip_urls=None, quality='[DVD]'):
                 return {'title': downld_json.get('videos')[0].get('title'), 
                     'download_url': downld_json.get('videos')[0].get('url'),
                     'url': vid_url}
-        except:
-            traceback.print_exc()
+        except Eception, e:
+            write_to_requester_log(e.msg, False)
     return {'error': 'No videos found'}
 
 if __name__ == '__main__':
