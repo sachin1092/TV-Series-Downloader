@@ -13,6 +13,9 @@ if __name__ == '__main__':
 
 from logger import write_to_downloader_log
 
+urls = ['movies', 'movies-1', 'movies-2', 'movies-3', 'movies-4',
+        'movies-5', 'movies-6', 'movies-7', 'movies-8', 'movies-9']
+
 
 def download(download_url, file_name):
     print 'download_url', download_url
@@ -91,10 +94,21 @@ def divide_n_download(title, url, ext, download_folder=None):
         if not os.path.exists(f_path + '/' + title):
             os.makedirs(f_path + '/' + title)
 
+        j = 0
+
         for i in xrange(len(start)):
-            download_url = 'http://series-downloader.appspot.com/downloads?filename=' + title \
-                           + '&download_url=' + url + '&start=' + str(start[i]) + '&end=' + str(end[i])
-            download(download_url, f_path + '/' + title + "/" + title + ext + '.' + str(i))
+            done = False
+            while not done:
+                download_url = 'http://' + urls[j] + '-downloader.appspot.com/downloads?filename=' + title \
+                               + '&download_url=' + url + '&start=' + str(start[i]) + '&end=' + str(end[i])
+                try:
+                    download(download_url, f_path + '/' + title + "/" + title + ext + '.' + str(i))
+                except urllib2.URLError, e:
+                    if e.code/100 == 5:
+                        j = (j + 1) % len(urls)
+                        done = False
+                else:
+                    done = True
 
         merge(len(start), str(title + ext), str(f_path + '/' + title))
     else:

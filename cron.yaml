@@ -1,5 +1,0 @@
-cron:
-- description: download completed checker
-  url: /checkDownloads
-  schedule: every day 03:00
-  timezone: Asia/Kolkata
