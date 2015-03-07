@@ -53,8 +53,8 @@ def extract_movie_info(movie, skip_urls=None, quality='[DVD]'):
             if downld_json.get('videos') is not None:
                 return {'title': downld_json.get('videos')[0].get('title'), 
                     'download_url': downld_json.get('videos')[0].get('url'),
-                    'url': vid_url}
-        except Eception, e:
+                    'url': vid_url, 'ext': downld_json.get('videos')[0].get('ext')}
+        except Exception, e:
             write_to_requester_log(e.msg, False)
     return {'error': 'No videos found'}
 

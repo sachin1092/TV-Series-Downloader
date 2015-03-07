@@ -61,7 +61,7 @@ def extract_episode_info(series, season, ep):
                 if download_resp.get('videos') is not None:
                     return {'title': download_resp.get('videos')[0].get('title'), 
                         'download_url': download_resp.get('videos')[0].get('url'),
-                        'url': gorilla_url}
+                        'url': gorilla_url, 'ext': downld_json.get('videos')[0].get('ext')}
             except:
                 traceback.print_exc()
     return {'error': 'no vid found'}

@@ -22,10 +22,12 @@ def check():
 		title = movie_info.get('title')
 		download_url = movie_info.get('download_url')
 		urls_used.append(movie_info.get('url'))
+		ext = movie_info.get('ext')
 
 		print title
 		print download_url
 		print urls_used
+		print ext
 
 
 if __name__ == '__main__':

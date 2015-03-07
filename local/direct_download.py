@@ -1,14 +1,17 @@
 import io
 import os
 from os.path import expanduser
-import re
 import shutil
 import requests
 from subprocess import call
 import urllib2
 
-url = ''
-filename = ''
+if __name__ == '__main__':
+    from os import sys, path
+
+    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
+from logger import write_to_downloader_log
 
 
 def download(download_url, file_name):
@@ -52,56 +55,52 @@ def merge(num_blocks, f_name, m_path):
             os.remove(m_path + "/" + f_name + '.' + str(f))
 
 
-if __name__ == '__main__':
-    from os import sys, path
+def divide_n_download(title, url, ext, download_folder=None):
+    r1 = requests.get(url)
+    content_length = int(r1.content)
 
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-    from logger import write_to_downloader_log
-
-    url = 'http://89.46.103.92:8777/cfuqiv7x2e2qedz7ni2b5gdtay7g4smpvlqfdudvutlsfuchmhx4nyrwlcfa/v.mp4'
-    filename = '50_shades_of_grey'
-
-    info_url = 'http://series-downloader.appspot.com/getInfo?download_url='
-
-    if url == '':
-        url = raw_input("Enter URL to download: ")
-    if filename == '':
-        filename = raw_input('Enter filename:')
-    r1 = requests.get(info_url + url)
-    contentLength = int(r1.content)
-
-    print "content length is: " + str(contentLength)
+    print "content length is: " + str(content_length)
 
     start = []
     end = []
 
-    BLOCK_SIZE = 1000 * 1000 * 5  # 5000K Bytes per block
-    if contentLength > 0:
-        # split the content into several parts: #BLOCK_SIZE per block.
-        blockNum = contentLength / BLOCK_SIZE
-        lastBlock = contentLength % BLOCK_SIZE
+    block_size = 1000 * 1000 * 5  # 5000K Bytes per block
+    if content_length > 0:
+        # split the content into several parts: #block_size per block.
+        block_num = content_length / block_size
 
-        for i in range(0, blockNum + 1):
-            start_byte = BLOCK_SIZE * i
-            end_byte = start_byte + BLOCK_SIZE - 1
+        for i in range(0, block_num + 1):
+            start_byte = block_size * i
+            end_byte = start_byte + block_size - 1
 
-            if end_byte > contentLength - 1:
-                end_byte = contentLength - 1
+            if end_byte > content_length - 1:
+                end_byte = content_length - 1
 
             if start_byte < end_byte:
                 start.append(start_byte)
                 end.append(end_byte)
 
-        ext = str(re.search("\.*.*(\.[a-zA-Z0-9]+)", url).group(1))
         home = expanduser("~")
-        call(["mkdir", home + "/My-Downloads"])
-        for i in xrange(len(start)):
-            download_url = 'http://series-downloader.appspot.com/downloads?filename=' + filename \
-                           + '&download_url=' + url + '&start=' + str(start[i]) + '&end=' + str(end[i])
-            # call(["wget", "-c", "-O", home + "/My-Downloads/" + filename + ext + '.' + str(i), download_url])
-            download(download_url+'3434', home + "/My-Downloads/" + filename + ext + '.' + str(i))
 
-        merge(len(start), str(filename+ext), str(home + '/My-Downloads'))
+        f_path = home + "/" + download_folder if download_folder else home
+        call(["mkdir", f_path])
+
+        for i in xrange(len(start)):
+            download_url = 'http://series-downloader.appspot.com/downloads?filename=' + title \
+                           + '&download_url=' + url + '&start=' + str(start[i]) + '&end=' + str(end[i])
+            download(download_url, f_path + '/' + title + "/" + title + ext + '.' + str(i))
+
+        merge(len(start), str(title + ext), str(f_path + '/' + title))
+
+
+
+
+
+
+
+
+
+
 
 
 
