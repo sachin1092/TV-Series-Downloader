@@ -8,7 +8,7 @@ if __name__ == '__main__':
 from py.config import ConfigReader
 from movie_extractor import extract_movie_info
 from logger import write_to_requester_log
-from local import direct_download
+from local import direct_download, subtitle_downloader
 
 
 def check():
@@ -42,7 +42,7 @@ def check():
             print ext
 
             try:
-                direct_download.divide_n_download(title, download_url, ext, 'Movie-Downloads')
+                direct_download.divide_n_download(title, download_url, ext, 'Movie-Downloads/' + title)
             except:
                 print "\n\n\nError:"
                 print '*' * 50
@@ -50,6 +50,8 @@ def check():
                 print '*' * 50
                 done = False
             else:
+                subtitle_downloader.download_sub(title,
+                                                 'Movie-Downloads/' + title, title)
                 done = True
 
 

@@ -1,4 +1,4 @@
-application: movies-1-downloader
+application: movies-downloader
 
 version: 0-1
 runtime: python27

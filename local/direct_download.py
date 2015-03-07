@@ -1,10 +1,12 @@
 import io
+import shutil
+import urllib2
+
+import requests
+
 import os
 from os.path import expanduser
-import shutil
-import requests
-from subprocess import call
-import urllib2
+
 
 if __name__ == '__main__':
     from os import sys, path
@@ -72,7 +74,6 @@ def divide_n_download(title, url, ext, download_folder=None):
 
     block_size = 1000 * 1000 * 5  # 5000K Bytes per block
     if content_length > 20971520:
-        return
         # split the content into several parts: #block_size per block.
         block_num = content_length / block_size
 
@@ -91,8 +92,8 @@ def divide_n_download(title, url, ext, download_folder=None):
 
         f_path = home + "/" + download_folder if download_folder else home
 
-        if not os.path.exists(f_path + '/' + title):
-            os.makedirs(f_path + '/' + title)
+        if not os.path.exists(f_path):
+            os.makedirs(f_path)
 
         j = 0
 
@@ -102,15 +103,16 @@ def divide_n_download(title, url, ext, download_folder=None):
                 download_url = 'http://' + urls[j] + '-downloader.appspot.com/downloads?filename=' + title \
                                + '&download_url=' + url + '&start=' + str(start[i]) + '&end=' + str(end[i])
                 try:
-                    download(download_url, f_path + '/' + title + "/" + title + ext + '.' + str(i))
+                    download(download_url, f_path + "/" + title + '.' + ext + '.' + str(i))
                 except urllib2.URLError, e:
+                    print e.code
                     if e.code/100 == 5:
                         j = (j + 1) % len(urls)
                         done = False
                 else:
                     done = True
 
-        merge(len(start), str(title + ext), str(f_path + '/' + title))
+        merge(len(start), str(title + '.' + ext), str(f_path))
     else:
         raise Exception('Content Length is weird')
 
