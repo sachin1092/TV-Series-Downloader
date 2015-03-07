@@ -258,12 +258,14 @@ class DownloadHandler(webapp2.RequestHandler):
 class GetInfoHandler(webapp2.RequestHandler):
     def get(self):
         from google.appengine.api import urlfetch
+        from urlparse import urlparse
 
         urlfetch.set_default_fetch_deadline(60)
         url = self.request.GET["download_url"]
-        match = re.search(r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{4})(.*)|http://(\w{0,5}\.\w*\.\w*:\d{4})(.*)", url)
-        hostURL = match.group(1) if match.group(1) else match.group(3)
-        resourceURL = match.group(2) if match.group(2) else match.group(4)
+        o = urlparse(url)
+        # match = re.search(r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{4})(.*)|http://(\w{0,5}\.\w*\.\w*:\d{4})(.*)", url)
+        hostURL = o.netloc  # match.group(1) if match.group(1) else match.group(3)
+        resourceURL = o.path  # match.group(2) if match.group(2) else match.group(4)
 
         hostURL = hostURL.replace(" ", "%20")
         resourceURL = resourceURL.replace(" ", "%20")

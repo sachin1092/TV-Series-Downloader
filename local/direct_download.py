@@ -15,6 +15,8 @@ from logger import write_to_downloader_log
 
 
 def download(download_url, file_name):
+    print 'download_url', download_url
+    print 'file_name', file_name
     u = urllib2.urlopen(download_url)
     f = open(file_name, 'wb')
     meta = u.info()
@@ -56,7 +58,8 @@ def merge(num_blocks, f_name, m_path):
 
 
 def divide_n_download(title, url, ext, download_folder=None):
-    r1 = requests.get(url)
+    info_url = 'http://series-downloader.appspot.com/getInfo?download_url='
+    r1 = requests.get(info_url + url)
     content_length = int(r1.content)
 
     print "content length is: " + str(content_length)
@@ -65,7 +68,8 @@ def divide_n_download(title, url, ext, download_folder=None):
     end = []
 
     block_size = 1000 * 1000 * 5  # 5000K Bytes per block
-    if content_length > 0:
+    if content_length > 20971520:
+        return
         # split the content into several parts: #block_size per block.
         block_num = content_length / block_size
 
@@ -83,7 +87,9 @@ def divide_n_download(title, url, ext, download_folder=None):
         home = expanduser("~")
 
         f_path = home + "/" + download_folder if download_folder else home
-        call(["mkdir", f_path])
+
+        if not os.path.exists(f_path + '/' + title):
+            os.makedirs(f_path + '/' + title)
 
         for i in xrange(len(start)):
             download_url = 'http://series-downloader.appspot.com/downloads?filename=' + title \
@@ -91,6 +97,8 @@ def divide_n_download(title, url, ext, download_folder=None):
             download(download_url, f_path + '/' + title + "/" + title + ext + '.' + str(i))
 
         merge(len(start), str(title + ext), str(f_path + '/' + title))
+    else:
+        raise Exception('Content Length is weird')
 
 
 

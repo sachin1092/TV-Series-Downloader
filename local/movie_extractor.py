@@ -19,6 +19,7 @@ __author__ = 'sachin'
 
 import traceback
 
+
 def extract_movie_info(movie, skip_urls=None, quality='[DVD]'):
     movie = movie.replace(" ", "+")
     base_url = 'http://www.watchfree.to'
@@ -35,7 +36,8 @@ def extract_movie_info(movie, skip_urls=None, quality='[DVD]'):
     try:
         for i in xrange(1, len(number_of_urls)):
             vid_xpath = '/html/body/div[2]/div[2]/div[5]/div[3]/table[%d]/tbody/tr/td[2]/strong/a' % i
-            vid_quality = video_page.xpath('/html/body/div[2]/div[2]/div[5]/div[3]/table[%d]/tbody/tr/td[1]/div' % i)[0].text
+            vid_quality = video_page.xpath('/html/body/div[2]/div[2]/div[5]/div[3]/table[%d]/tbody/tr/td[1]/div' % i)[
+                0].text
             if vid_quality != quality:
                 continue
             video_urls.append(video_page.xpath(vid_xpath)[0].values()[0])
@@ -45,18 +47,19 @@ def extract_movie_info(movie, skip_urls=None, quality='[DVD]'):
         if skip_urls and vid_url in skip_urls:
             continue
         write_to_requester_log("\n\n\n", False)
-        write_to_requester_log("-"*50, False)
+        write_to_requester_log("-" * 50, False)
         write_to_requester_log('requesting ' + base_url + vid_url, False)
         try:
-            downld_json = json.loads(requests.get('http://my-youtube-dl.appspot.com/api/info?url=' 
-                + base_url + vid_url + '&flatten=True').text)
-            if downld_json.get('videos') is not None:
-                return {'title': downld_json.get('videos')[0].get('title'), 
-                    'download_url': downld_json.get('videos')[0].get('url'),
-                    'url': vid_url, 'ext': downld_json.get('videos')[0].get('ext')}
+            download_json = json.loads(requests.get('http://my-youtube-dl.appspot.com/api/info?url='
+                                                    + base_url + vid_url + '&flatten=True').text)
+            if download_json.get('videos') is not None:
+                return {'title': download_json.get('videos')[0].get('title'),
+                        'download_url': download_json.get('videos')[0].get('url'),
+                        'url': vid_url, 'ext': download_json.get('videos')[0].get('ext')}
         except Exception, e:
-            write_to_requester_log(e.msg, False)
+            write_to_requester_log(e.message, False)
     return {'error': 'No videos found'}
+
 
 if __name__ == '__main__':
     movie = raw_input("Enter movie to download: ")
