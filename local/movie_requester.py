@@ -42,7 +42,7 @@ def check():
             print ext
 
             try:
-                direct_download.divide_n_download(title, download_url, ext, 'Movie-Downloads/' + title)
+                direct_download.divide_n_download(title, download_url, ext, 'My-Downloads/Movie-Downloads/' + title)
             except:
                 print "\n\n\nError:"
                 print '*' * 50
@@ -51,7 +51,7 @@ def check():
                 done = False
             else:
                 subtitle_downloader.download_sub(title,
-                                                 'Movie-Downloads/' + title, title)
+                                                 'My-Downloads/Movie-Downloads/' + title, title)
                 done = True
 
 

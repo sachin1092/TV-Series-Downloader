@@ -42,7 +42,7 @@ def download(series, season, episode):
 
         try:
             direct_download.divide_n_download(series + '_s' + str(season) + 'e' + str(episode), download_url, ext, (
-                'Series-Downloads/' + series.replace('_', ' ').title() + '/Season %d' % season))
+                'My-Downloads/Series-Downloads/' + series.replace('_', ' ').title() + '/Season %d' % season))
         except:
             print "\n\n\nError:"
             print '*' * 50
@@ -51,7 +51,7 @@ def download(series, season, episode):
             done = False
         else:
             subtitle_downloader.download_sub(title, (expanduser("~") +
-                                                     '/Series-Downloads/'
+                                                     '/My-Downloads/Series-Downloads/'
                                                      + series.replace('_', ' ').title() + '/Season %d' % season),
                                              title)
             done = True

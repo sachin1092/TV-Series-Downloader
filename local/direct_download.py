@@ -3,6 +3,7 @@ import shutil
 import urllib2
 
 import requests
+import time
 
 import os
 from os.path import expanduser
@@ -113,6 +114,9 @@ def divide_n_download(title, url, ext, download_folder=None):
                     done = True
 
         merge(len(start), str(title + '.' + ext), str(f_path))
+        f = open('/My-Downloads/Summary.txt', 'a')
+        f.write('\n' + title)
+        f.close()
     else:
         raise Exception('Content Length is weird')
 
