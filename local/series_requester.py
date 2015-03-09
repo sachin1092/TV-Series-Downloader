@@ -1,3 +1,4 @@
+import json
 import traceback
 from os.path import expanduser
 import re
@@ -55,6 +56,14 @@ def download(series, season, episode):
                                                      + series.replace('_', ' ').title() + '/Season %d' % season),
                                              title)
             done = True
+            configReader = ConfigReader()
+            config = configReader.get_settings_parser()
+            series_list = configReader.get_series_list()
+            series_list[series]['season'] = season
+            series_list[series]['episode'] = episode
+            config.set('Series', 'list', json.dumps(series_list))
+            with open('downloader.ini', 'wb') as configfile:
+                config.write(configfile)
 
 
 def check():

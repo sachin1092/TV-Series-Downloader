@@ -1,3 +1,4 @@
+import json
 import traceback
 
 if __name__ == '__main__':
@@ -14,6 +15,7 @@ from local import direct_download, subtitle_downloader
 def check():
     config = ConfigReader()
     movies_list = config.get_movies_list()
+    update_list = movies_list
     print movies_list
     for movie in movies_list:
         urls_used = []
@@ -53,6 +55,11 @@ def check():
                 subtitle_downloader.download_sub(title,
                                                  'My-Downloads/Movie-Downloads/' + title, title)
                 done = True
+                update_list.remove(movie)
+                config = ConfigReader().get_settings_parser()
+                config.set('Movies', 'list', json.dumps(update_list))
+                with open('downloader.ini', 'wb') as configfile:
+                    config.write(configfile)
 
 
 if __name__ == '__main__':

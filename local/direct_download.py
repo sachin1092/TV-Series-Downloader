@@ -21,6 +21,10 @@ urls = ['movies', 'movies-1', 'movies-2', 'movies-3', 'movies-4',
 
 
 def download(download_url, file_name):
+    if os.path.isfile(file_name):
+        print "File %s exists with size:" % file_name, os.path.getsize(file_name)
+        if os.path.getsize(file_name) == 5000000:
+            return
     print 'download_url', download_url
     print 'file_name', file_name
     u = urllib2.urlopen(download_url)
@@ -101,20 +105,31 @@ def divide_n_download(title, url, ext, download_folder=None):
         for i in xrange(len(start)):
             done = False
             while not done:
-                download_url = 'http://' + urls[j] + '-downloader.appspot.com/downloads?filename=' + title \
+                download_url = 'http://' + urls[j] + '-downloader.appspot.com/downloads?filename=' + title.replace(' ',
+                                                                                                                   '%20') \
                                + '&download_url=' + url + '&start=' + str(start[i]) + '&end=' + str(end[i])
                 try:
                     download(download_url, f_path + "/" + title + '.' + ext + '.' + str(i))
                 except urllib2.URLError, e:
                     print e.code
-                    if e.code/100 == 5:
+                    if e.code / 100 == 5:
                         j = (j + 1) % len(urls)
                         done = False
+                    else:
+                        print "error code " + str(e.code)
+                        j = (j + 1) % len(urls)
+                        done = False
+                except:
+                    if os.path.isfile(f_path + "/" + title + '.' + ext + '.0'):
+                        print "File %s exists with size:" % f_path + "/" + title + '.' + ext + '.0', os.path.getsize(f_path + "/" + title + '.' + ext + '.0')
+                        if os.path.getsize(f_path + "/" + title + '.' + ext + '.0') == 5000000:
+                            done = False
                 else:
                     done = True
 
         merge(len(start), str(title + '.' + ext), str(f_path))
-        f = open('/My-Downloads/Summary.txt', 'a')
+
+        f = open(expanduser('~') + '/My-Downloads/Summary.txt', 'a')
         f.write('\n' + title)
         f.close()
     else:
@@ -122,7 +137,8 @@ def divide_n_download(title, url, ext, download_folder=None):
 
 
 
-
+if __name__ == '__main__':
+    divide_n_download('Big Hero 6 2014 BDRip x264-SPARKS', 'http://94.176.148.173/mjuqiwcj242qedz7nior5trkiugcp456ki62s2rkmzivtjf4kumdsnpfhsna/v.mp4','mp4','My-Downloads/Movie-Downloads/Big Hero 6 2014 BDRip x264-SPARKS')
 
 
 
