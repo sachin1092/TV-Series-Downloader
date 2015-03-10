@@ -1,4 +1,5 @@
 import json
+from os.path import expanduser
 import traceback
 
 if __name__ == '__main__':
@@ -52,7 +53,7 @@ def check():
                 print '*' * 50
                 done = False
             else:
-                subtitle_downloader.download_sub(title,
+                subtitle_downloader.download_sub(title, expanduser("~") +
                                                  'My-Downloads/Movie-Downloads/' + title, title)
                 done = True
                 update_list.remove(movie)

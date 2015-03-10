@@ -30,19 +30,21 @@ def extract_movie_info(movie, skip_urls=None, quality='[DVD]'):
     search_page = html.fromstring(search_request.text)
     result = search_page.xpath('/html/body/div/div[2]/div[3]/a')[0].values()
     video_request = m_requests.get(base_url + result[0])
+    print base_url + result[0]
     video_page = html.fromstring(video_request.text)
     number_of_urls = re.findall('</table>', video_request.text)
     video_urls = []
     try:
         for i in xrange(1, len(number_of_urls)):
-            vid_xpath = '/html/body/div[2]/div[2]/div[5]/div[3]/table[%d]/tbody/tr/td[2]/strong/a' % i
-            vid_quality = video_page.xpath('/html/body/div[2]/div[2]/div[5]/div[3]/table[%d]/tbody/tr/td[1]/div' % i)[
-                0].text
+            vid_xpath = '/html/body/div[2]/div[2]/div[4]/div[2]/table[%d]/tbody/tr/td[2]/strong/a' % i
+            vid_quality = video_page.xpath(
+                '/html/body/div[2]/div[2]/div[4]/div[2]/table[%d]/tbody/tr/td[1]/div' % i)[0].text
             if vid_quality != quality:
                 continue
             video_urls.append(video_page.xpath(vid_xpath)[0].values()[0])
     except:
-        pass
+        import traceback
+        traceback.print_exc()
     for vid_url in video_urls:
         if skip_urls and vid_url in skip_urls:
             continue
