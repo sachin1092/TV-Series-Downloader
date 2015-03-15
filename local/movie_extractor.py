@@ -28,7 +28,7 @@ def extract_movie_info(movie, skip_urls=None, quality='[DVD]'):
     write_to_requester_log(url, False)
     search_request = m_requests.get(url)
     search_page = html.fromstring(search_request.text)
-    result = search_page.xpath('/html/body/div/div[2]/div[3]/a')[0].values()
+    result = search_page.xpath('/html/body/div[1]/div[2]/div[2]/a')[0].values()
     video_request = m_requests.get(base_url + result[0])
     print base_url + result[0]
     video_page = html.fromstring(video_request.text)

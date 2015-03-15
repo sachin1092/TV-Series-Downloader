@@ -22,9 +22,9 @@ def download_sub(file_name, f_path, new_name=None):
         if not os.path.exists(f_path):
             os.makedirs(f_path)
 
-        print "Requesting: ", base_url + '/subtitles/release?q=' + file_name.replace(' ', '%20')
+        print "Requesting: ", base_url + '/subtitles/release?q=' + file_name.replace(' ', '+')
 
-        r = m_requests.get(base_url + '/subtitles/release?q=' + file_name.replace(' ', '%20'),
+        r = m_requests.get(base_url + '/subtitles/release?q=' + file_name.replace(' ', '+'),
                          cookies={"LanguageFilter": "13"})
         tree = html.fromstring(r.text)
         specific_url = tree.xpath('//*[@id="content"]/div[1]/div/div/table/tbody/tr[1]/td[1]/a')[0].values()[0]

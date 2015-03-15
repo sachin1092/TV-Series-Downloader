@@ -54,7 +54,7 @@ def check():
                 done = False
             else:
                 subtitle_downloader.download_sub(title, expanduser("~") +
-                                                 'My-Downloads/Movie-Downloads/' + title, title)
+                                                 '/My-Downloads/Movie-Downloads/' + title, title)
                 done = True
                 update_list.remove(movie)
                 config = ConfigReader().get_settings_parser()
