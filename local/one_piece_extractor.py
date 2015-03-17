@@ -2,7 +2,7 @@ __author__ = 'sachin'
 
 base_url = 'http://www.watchfree.to'
 # search_url = '/tv-6d1c-One-Piece-JP-tv-show-online-free-putlocker.html/season-%s-episode-%s'
-search_url = '/tv-2984a3-Steins-Gate-tv-show-online-free-putlocker.html/season-%s-episode-%s'
+search_url = '/tv-2a31b4-Dragon-Ball-Super-tv-show-online-free-putlocker.html/season-%s-episode-%s'
 
 import logging
 import os

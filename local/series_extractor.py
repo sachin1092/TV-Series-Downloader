@@ -57,7 +57,8 @@ def extract_episode_info(series, season, ep, skip_urls=None):
                 video_tree = html.fromstring(video_page.text)
 
                 gorilla_url = \
-                    video_tree.xpath('/html/body/div[3]/div[2]/div/div[2]/div/div/div/div/div/div/div/a')[0].values()[0]
+                    video_tree.xpath('/html/body/div[2]/div[2]/div/div[2]/div/div/div/div/div/div/div/a')[0].values()[0]
+                    
                 write_to_requester_log(gorilla_url)
 
                 if skip_urls and gorilla_url in skip_urls:
