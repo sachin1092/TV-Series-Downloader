@@ -68,7 +68,20 @@ def extract_episode_info(season, ep, skip_urls=None, quality='[DVD]'):
 	return {'error': 'No videos found'}
 
 
+def get_series_url(name):
+	name = name.replace(" ", "+")
+	base_url = 'http://www.watchfree.to'
+	search_url = '/?keyword=%s&search_section=1'
+	url = base_url + search_url % name
+	write_to_requester_log(url, False)
+	search_request = m_requests.get(url)
+	search_page = html.fromstring(search_request.text)
+	result = search_page.xpath('/html/body/div[1]/div[2]/div[2]/a')[0].values()[0]
+	return result
+
 if __name__ == '__main__':
-	season = raw_input("Enter one piece season to download: ")
-	episode = raw_input("Enter one piece episode to download: ")
-	write_to_requester_log(extract_episode_info(season, episode))
+	# season = raw_input("Enter one piece season to download: ")
+	# episode = raw_input("Enter one piece episode to download: ")
+	# write_to_requester_log(extract_episode_info(season, episode))
+	name = raw_input("Enter name of the series to download")
+	print get_series_url(name)
