@@ -20,6 +20,7 @@ from lxml import html
 import requests
 import m_requests
 from logger import write_to_requester_log
+from py.config import ConfigReader
 
 __author__ = 'sachin'
 
@@ -70,6 +71,7 @@ def extract_episode_info(season, ep, skip_urls=None, quality='[DVD]'):
 
 def get_series_url(name):
 	name = name.replace(" ", "+")
+	name = name.replace("_", "+")
 	base_url = 'http://www.watchfree.to'
 	search_url = '/?keyword=%s&search_section=1'
 	url = base_url + search_url % name
@@ -83,5 +85,13 @@ if __name__ == '__main__':
 	# season = raw_input("Enter one piece season to download: ")
 	# episode = raw_input("Enter one piece episode to download: ")
 	# write_to_requester_log(extract_episode_info(season, episode))
-	name = raw_input("Enter name of the series to download")
-	print get_series_url(name)
+	# name = raw_input("Enter name of the series to download: ")
+	config = ConfigReader()
+	series_list = config.get_series_list()
+	for series in series_list.keys():
+		try:
+			print series, ": ", get_series_url(series)
+		except:
+			# import traceback
+			# traceback.print_exc()
+			pass
