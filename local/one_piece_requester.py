@@ -13,7 +13,7 @@ from one_piece_extractor import extract_episode_info
 from logger import write_to_requester_log
 from local import direct_download, subtitle_downloader
 # base_url = 'http://www.watchfree.to/tv-6d1c-One-Piece-JP-tv-show-online-free-putlocker.html/season-%s-episode-%s'
-base_url = 'http://www.watchfree.to/tv-2984a3-Steins-Gate-tv-show-online-free-putlocker.html/season-%s-episode-%s'
+# base_url = 'http://www.watchfree.to/tv-2984a3-Steins-Gate-tv-show-online-free-putlocker.html/season-%s-episode-%s'
 
 def check():
     # import pdb
@@ -85,5 +85,26 @@ def check():
                                                  '/My-Downloads/Series-Downloads/' + title, title)
 
 
+def get_series_url(name):
+    name = name.replace(" ", "+")
+    name = name.replace("_", "+")
+    base_url = 'http://www.watchfree.to'
+    search_url = '/?keyword=%s&search_section=1'
+    url = base_url + search_url % name
+    write_to_requester_log(url, False)
+    search_request = m_requests.get(url)
+    search_page = html.fromstring(search_request.text)
+    result = search_page.xpath('/html/body/div[1]/div[2]/div[2]/a')[0].values()[0]
+    return result
+
 if __name__ == '__main__':
-    check()
+    # check()
+    config = ConfigReader()
+    series_list = config.get_series_list()
+    for series in series_list.keys():
+        try:
+            print series, ": ", get_series_url(series)
+        except:
+            # import traceback
+            # traceback.print_exc()
+            pass

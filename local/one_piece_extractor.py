@@ -27,7 +27,7 @@ __author__ = 'sachin'
 import traceback
 
 
-def extract_episode_info(season, ep, skip_urls=None, quality='[DVD]'):
+def extract_episode_info(season, ep, skip_urls=None, search_url, quality='[DVD]'):
 	# import pdb
 	# pdb.set_trace()
 	url = base_url + search_url % (season, ep)
@@ -69,29 +69,9 @@ def extract_episode_info(season, ep, skip_urls=None, quality='[DVD]'):
 	return {'error': 'No videos found'}
 
 
-def get_series_url(name):
-	name = name.replace(" ", "+")
-	name = name.replace("_", "+")
-	base_url = 'http://www.watchfree.to'
-	search_url = '/?keyword=%s&search_section=1'
-	url = base_url + search_url % name
-	write_to_requester_log(url, False)
-	search_request = m_requests.get(url)
-	search_page = html.fromstring(search_request.text)
-	result = search_page.xpath('/html/body/div[1]/div[2]/div[2]/a')[0].values()[0]
-	return result
+
 
 if __name__ == '__main__':
-	# season = raw_input("Enter one piece season to download: ")
-	# episode = raw_input("Enter one piece episode to download: ")
-	# write_to_requester_log(extract_episode_info(season, episode))
-	# name = raw_input("Enter name of the series to download: ")
-	config = ConfigReader()
-	series_list = config.get_series_list()
-	for series in series_list.keys():
-		try:
-			print series, ": ", get_series_url(series)
-		except:
-			# import traceback
-			# traceback.print_exc()
-			pass
+	season = raw_input("Enter one piece season to download: ")
+	episode = raw_input("Enter one piece episode to download: ")
+	write_to_requester_log(extract_episode_info(season, episode))
