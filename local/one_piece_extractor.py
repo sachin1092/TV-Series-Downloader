@@ -27,7 +27,7 @@ __author__ = 'sachin'
 import traceback
 
 
-def extract_episode_info(season, ep, skip_urls=None, search_url, quality='[DVD]'):
+def extract_episode_info(season, ep, search_url, skip_urls=None, quality='[DVD]'):
 	# import pdb
 	# pdb.set_trace()
 	url = base_url + search_url % (season, ep)
@@ -67,8 +67,6 @@ def extract_episode_info(season, ep, skip_urls=None, search_url, quality='[DVD]'
 	    except Exception, e:
 	        write_to_requester_log(e.message, False)
 	return {'error': 'No videos found'}
-
-
 
 
 if __name__ == '__main__':
