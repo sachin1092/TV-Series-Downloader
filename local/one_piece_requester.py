@@ -19,11 +19,14 @@ def check():
     series_list = config.get_series_list()
     for series in series_list.keys():
         try:
-            print series, ": ", get_series_url(series)
+            series_url = get_series_url(series)
+            last_season = series_list[series].get('season')
+            last_episode = series_list[series].get('episode')
+            series_url = series_url + ("season-%s-episode-%s" % (last_season, last_episode))
+            print series, ": ", series_url
         except:
-            # import traceback
-            # traceback.print_exc()
-            pass
+            import traceback
+            traceback.print_exc()
     # import pdb
     # pdb.set_trace()
     # config = ConfigReader()
@@ -106,13 +109,13 @@ def get_series_url(name):
     return result
 
 if __name__ == '__main__':
-    # check()
-    config = ConfigReader()
-    series_list = config.get_series_list()
-    for series in series_list.keys():
-        try:
-            print series, ": ", get_series_url(series)
-        except:
+    check()
+    # config = ConfigReader()
+    # series_list = config.get_series_list()
+    # for series in series_list.keys():
+        # try:
+            # print series, ": ", get_series_url(series)
+        # except:
             # import traceback
             # traceback.print_exc()
-            pass
+            # pass
