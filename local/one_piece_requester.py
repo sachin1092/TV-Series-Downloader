@@ -31,6 +31,9 @@ def check():
             print series, ": ", series_url
             video_page = m_requests.get(series_url)
             print video_page.text
+            if 'File not found.' in video_page.text:
+                print "Nothing here"
+                all_downloaded = True
         except:
             import traceback
             traceback.print_exc()
@@ -112,6 +115,7 @@ def get_series_url(name):
     search_request = m_requests.get(url)
     search_page = html.fromstring(search_request.text)
     result = search_page.xpath('/html/body/div[1]/div[2]/div[2]/a')[0].values()[0]
+    result = result.replace("watch", "tv")
     return result
 
 if __name__ == '__main__':
