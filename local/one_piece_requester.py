@@ -3,6 +3,7 @@ from os.path import expanduser
 import traceback
 import requests
 import m_requests
+from lxml import html
 
 if __name__ == '__main__':
     from os import sys, path
@@ -13,6 +14,8 @@ from py.config import ConfigReader
 from one_piece_extractor import extract_episode_info
 from logger import write_to_requester_log
 from local import direct_download, subtitle_downloader
+
+base_url = 'http://www.watchfree.to'
 # base_url = 'http://www.watchfree.to/tv-6d1c-One-Piece-JP-tv-show-online-free-putlocker.html/season-%s-episode-%s'
 # base_url = 'http://www.watchfree.to/tv-2984a3-Steins-Gate-tv-show-online-free-putlocker.html/season-%s-episode-%s'
 
@@ -24,8 +27,10 @@ def check():
             series_url = get_series_url(series)
             last_season = series_list[series].get('season')
             last_episode = series_list[series].get('episode')
-            series_url = series_url + ("season-%s-episode-%s" % (last_season, last_episode))
+            series_url = base_url + series_url + ("/season-%s-episode-%s" % (last_season, last_episode + 10))
             print series, ": ", series_url
+            video_page = m_requests.get(series_url)
+            print video_page.text
         except:
             import traceback
             traceback.print_exc()
@@ -101,7 +106,6 @@ def check():
 def get_series_url(name):
     name = name.replace(" ", "+")
     name = name.replace("_", "+")
-    base_url = 'http://www.watchfree.to'
     search_url = '/?keyword=%s&search_section=1'
     url = base_url + search_url % name
     write_to_requester_log(url, False)
