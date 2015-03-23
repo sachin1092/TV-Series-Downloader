@@ -2,6 +2,7 @@ import json
 from os.path import expanduser
 import traceback
 import requests
+import m_requests
 
 if __name__ == '__main__':
     from os import sys, path
@@ -16,6 +17,7 @@ from local import direct_download, subtitle_downloader
 # base_url = 'http://www.watchfree.to/tv-2984a3-Steins-Gate-tv-show-online-free-putlocker.html/season-%s-episode-%s'
 
 def check():
+    config = ConfigReader()
     series_list = config.get_series_list()
     for series in series_list.keys():
         try:
