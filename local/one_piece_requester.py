@@ -24,16 +24,33 @@ def check():
     series_list = config.get_series_list()
     for series in series_list.keys():
         try:
+
+            all_downloaded = False
+
             series_url = get_series_url(series)
             last_season = series_list[series].get('season')
             last_episode = series_list[series].get('episode')
-            series_url = base_url + series_url + ("/season-%s-episode-%s" % (last_season, last_episode + 10))
-            print series, ": ", series_url
-            video_page = m_requests.get(series_url)
-            print video_page.text
-            if 'File not found.' in video_page.text:
-                print "Nothing here"
-                all_downloaded = True
+
+            write_to_requester_log(
+                "Last Episode Downloaded of " + series + " is S" + str(last_season) + "E" + str(last_episode))
+            write_to_requester_log("Checking if new episode came")
+
+            while not all_downloaded:
+                last_episode = last_episode + 1
+                series_url = base_url + series_url + ("/season-%s-episode-%s" % (last_season, last_episode))
+                print series, ": ", series_url
+                video_page = m_requests.get(series_url)
+                # print video_page.text
+                if 'File not found.' in video_page.text:
+                    last_season = last_season + 1
+                    last_episode = 1
+                    series_url = base_url + series_url + ("/season-%s-episode-%s" % (last_season, last_episode))
+                    print series, ": ", series_url
+                    video_page = m_requests.get(series_url)
+                    # print video_page.text
+                    if 'File not found.' in video_page.text:
+                        print "Nothing to be done here."
+                        all_downloaded = True
         except:
             import traceback
             traceback.print_exc()
