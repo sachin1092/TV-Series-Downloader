@@ -51,6 +51,50 @@ def check():
                     if 'File not found.' in video_page.text:
                         print "Nothing to be done here."
                         all_downloaded = True
+
+                urls_used = []
+                if not all_downloaded:
+                    done = False
+                    while not done:
+
+                        if len(urls_used) > 40:
+                            done = True
+
+                        print "-" * 20
+                        print "Extracting url for season %d episode %d" % (season, episode)
+                        episode_info = extract_episode_info(season, episode, skip_urls=urls_used)
+                        if "error" in episode_info.keys():
+                            write_to_requester_log(episode_info.get("error"), True)
+                            done = True
+                            continue
+                        title = episode_info.get('title')
+                        download_url = episode_info.get('download_url')
+                        urls_used.append(episode_info.get('url'))
+                        ext = episode_info.get('ext')
+
+                        print title
+                        print download_url
+                        print urls_used
+                        print ext
+
+                        try:
+                            direct_download.divide_n_download(title, download_url, ext, 'My-Downloads/Series-Downloads/' + title)
+                        except:
+                            print "\n\n\nError:"
+                            print '*' * 50
+                            traceback.print_exc()
+                            print '*' * 50
+                            done = False
+                        else:
+                            done = True
+                            update_list.update({'season': season, 'episode': episode})
+                            config = ConfigReader().get_settings_parser()
+                            config.set('Series', 'one_piece', json.dumps(update_list))
+                            with open('downloader.ini', 'wb') as configfile:
+                                config.write(configfile)
+                            subtitle_downloader.download_sub(title, expanduser("~") +
+                                                             '/My-Downloads/Series-Downloads/' + title, title)
+
         except:
             import traceback
             traceback.print_exc()
