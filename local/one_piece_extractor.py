@@ -27,10 +27,10 @@ __author__ = 'sachin'
 import traceback
 
 
-def extract_episode_info(season, ep, search_url, skip_urls=None, quality='[DVD]'):
+def extract_episode_info(season, ep, url, skip_urls=None, quality='[DVD]'):
 	# import pdb
 	# pdb.set_trace()
-	url = base_url + search_url % (season, ep)
+	# url = base_url + search_url % (season, ep)
 	write_to_requester_log(url, False)
 	# search_request = m_requests.get(url)
 	# search_page = html.fromstring(search_request.text)

@@ -27,7 +27,7 @@ def check():
 
             all_downloaded = False
 
-            series_url = get_series_url(series)
+            serie_url = get_series_url(series)
             last_season = series_list[series].get('season')
             last_episode = series_list[series].get('episode')
 
@@ -37,7 +37,7 @@ def check():
 
             while not all_downloaded:
                 last_episode = last_episode + 1
-                series_url = base_url + series_url + ("/season-%s-episode-%s" % (last_season, last_episode))
+                series_url = base_url + serie_url + ("/season-%s-episode-%s" % (last_season, last_episode))
                 print series, ": ", series_url
                 video_page = m_requests.get(series_url)
                 # print video_page.text
@@ -61,8 +61,8 @@ def check():
                             done = True
 
                         print "-" * 20
-                        print "Extracting url for season %d episode %d" % (season, episode)
-                        episode_info = extract_episode_info(season, episode, skip_urls=urls_used)
+                        print "Extracting url for season %d episode %d" % (last_season, last_episode)
+                        episode_info = extract_episode_info(last_season, last_episode, series_url, skip_urls=urls_used)
                         if "error" in episode_info.keys():
                             write_to_requester_log(episode_info.get("error"), True)
                             done = True
@@ -87,7 +87,7 @@ def check():
                             done = False
                         else:
                             done = True
-                            update_list.update({'season': season, 'episode': episode})
+                            update_list.update({'season': last_season, 'episode': last_episode})
                             config = ConfigReader().get_settings_parser()
                             config.set('Series', 'one_piece', json.dumps(update_list))
                             with open('downloader.ini', 'wb') as configfile:
