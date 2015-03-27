@@ -50,8 +50,8 @@ def extract_episode_info(season, ep, url, skip_urls=None, quality='[DVD]'):
 	        video_urls.append(video_page.xpath(vid_xpath)[0].values()[0])
 	except:
 		if not len(video_urls):
-	    	import traceback
-	    	traceback.print_exc()
+			import traceback
+			traceback.print_exc()
 	for vid_url in video_urls:
 	    if skip_urls and vid_url in skip_urls:
 	        continue

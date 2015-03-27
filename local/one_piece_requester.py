@@ -78,7 +78,9 @@ def check():
                         print ext
 
                         try:
-                            direct_download.divide_n_download(title, download_url, ext, 'My-Downloads/Series-Downloads/' + title)
+                            # direct_download.divide_n_download(title, download_url, ext, 'My-Downloads/Series-Downloads/' + title)
+                            direct_download.divide_n_download(series + '_s' + str(season) + 'e' + str(episode), download_url, ext, (
+                                'My-Downloads/Series-Downloads/' + series.replace('_', ' ').title().strip() + '/Season %d' % season))
                         except:
                             print "\n\n\nError:"
                             print '*' * 50
@@ -86,14 +88,19 @@ def check():
                             print '*' * 50
                             done = False
                         else:
+                            subtitle_downloader.download_sub(title, (expanduser("~") +
+                                                     '/My-Downloads/Series-Downloads/'
+                                                     + series.replace('_', ' ').title() + '/Season %d' % season),
+                                             title)
                             done = True
-                            update_list.update({'season': last_season, 'episode': last_episode})
-                            config = ConfigReader().get_settings_parser()
-                            config.set('Series', 'one_piece', json.dumps(update_list))
+                            configReader = ConfigReader()
+                            config = configReader.get_settings_parser()
+                            series_list = configReader.get_series_list()
+                            series_list[series]['season'] = season
+                            series_list[series]['episode'] = episode
+                            config.set('Series', 'list', json.dumps(series_list))
                             with open('downloader.ini', 'wb') as configfile:
                                 config.write(configfile)
-                            subtitle_downloader.download_sub(title, expanduser("~") +
-                                                             '/My-Downloads/Series-Downloads/' + title, title)
 
         except:
             import traceback
