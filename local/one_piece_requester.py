@@ -79,8 +79,8 @@ def check():
 
                         try:
                             # direct_download.divide_n_download(title, download_url, ext, 'My-Downloads/Series-Downloads/' + title)
-                            direct_download.divide_n_download(series + '_s' + str(season) + 'e' + str(episode), download_url, ext, (
-                                'My-Downloads/Series-Downloads/' + series.replace('_', ' ').title().strip() + '/Season %d' % season))
+                            direct_download.divide_n_download(series + '_s' + str(last_season) + 'e' + str(last_episode), download_url, ext, (
+                                'My-Downloads/Series-Downloads/' + series.replace('_', ' ').title().strip() + '/Season %d' % last_season))
                         except:
                             print "\n\n\nError:"
                             print '*' * 50
@@ -103,7 +103,6 @@ def check():
                                 config.write(configfile)
 
         except:
-            import traceback
             traceback.print_exc()
     # import pdb
     # pdb.set_trace()
