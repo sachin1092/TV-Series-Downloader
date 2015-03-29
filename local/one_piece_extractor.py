@@ -1,8 +1,6 @@
 __author__ = 'sachin'
 
 base_url = 'http://www.watchfree.to'
-# search_url = '/tv-6d1c-One-Piece-JP-tv-show-online-free-putlocker.html/season-%s-episode-%s'
-search_url = '/tv-2a31b4-Dragon-Ball-Super-tv-show-online-free-putlocker.html/season-%s-episode-%s'
 
 import logging
 import os
@@ -28,13 +26,7 @@ import traceback
 
 
 def extract_episode_info(season, ep, url, skip_urls=None, quality='[DVD]'):
-	# import pdb
-	# pdb.set_trace()
-	# url = base_url + search_url % (season, ep)
 	write_to_requester_log(url, False)
-	# search_request = m_requests.get(url)
-	# search_page = html.fromstring(search_request.text)
-	# result = search_page.xpath('/html/body/div[1]/div[2]/div[2]/a')[0].values()
 	video_request = m_requests.get(url)
 
 	video_page = html.fromstring(video_request.text)
