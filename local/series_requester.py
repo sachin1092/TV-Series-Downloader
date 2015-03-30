@@ -38,16 +38,15 @@ def check():
                 series_url = base_url + serie_url + ("/season-%s-episode-%s" % (last_season, last_episode))
                 print series, ": ", series_url
                 video_page = m_requests.get(series_url)
-                # print video_page.text
                 if 'File not found.' in video_page.text:
                     last_season = last_season + 1
                     last_episode = 1
-                    series_url = base_url + series_url + ("/season-%s-episode-%s" % (last_season, last_episode))
+                    series_url = base_url + serie_url + ("/season-%s-episode-%s" % (last_season, last_episode))
                     print series, ": ", series_url
                     video_page = m_requests.get(series_url)
                     # print video_page.text
                     if 'File not found.' in video_page.text:
-                        print "Nothing to be done here."
+                        print "Nothing to be done here.\n\n"
                         all_downloaded = True
 
                 urls_used = []
