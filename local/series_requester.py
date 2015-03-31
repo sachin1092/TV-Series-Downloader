@@ -86,14 +86,14 @@ def check():
                         else:
                             subtitle_downloader.download_sub(title, (expanduser("~") +
                                                      '/My-Downloads/Series-Downloads/'
-                                                     + series.replace('_', ' ').title() + '/Season %d' % season),
+                                                     + series.replace('_', ' ').title() + '/Season %d' % last_season),
                                              title)
                             done = True
                             configReader = ConfigReader()
                             config = configReader.get_settings_parser()
                             series_list = configReader.get_series_list()
-                            series_list[series]['season'] = season
-                            series_list[series]['episode'] = episode
+                            series_list[series]['season'] = last_season
+                            series_list[series]['episode'] = last_episode
                             config.set('Series', 'list', json.dumps(series_list))
                             with open('downloader.ini', 'wb') as configfile:
                                 config.write(configfile)
