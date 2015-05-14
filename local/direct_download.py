@@ -66,10 +66,10 @@ def merge(num_blocks, f_name, m_path):
         if os.path.isfile(m_path + "/" + f_name + '.' + str(f)):
             os.remove(m_path + "/" + f_name + '.' + str(f))
 
-
 def divide_n_download(title, url, ext, download_folder=None):
     info_url = 'http://series-downloader.appspot.com/getInfo?download_url='
     r1 = requests.get(info_url + url)
+    print r1.content
     content_length = int(r1.content)
 
     print "content length is: " + str(content_length)
@@ -95,7 +95,7 @@ def divide_n_download(title, url, ext, download_folder=None):
 
         home = expanduser("~")
 
-        f_path = home + "/" + download_folder if download_folder else home
+        f_path = (home + "/" + download_folder if download_folder else home).strip()
 
         if not os.path.exists(f_path):
             os.makedirs(f_path)
@@ -138,7 +138,9 @@ def divide_n_download(title, url, ext, download_folder=None):
 
 
 if __name__ == '__main__':
-    divide_n_download('Big Hero 6 2014 BDRip x264-SPARKS', 'http://94.176.148.173/mjuqiwcj242qedz7nior5trkiugcp456ki62s2rkmzivtjf4kumdsnpfhsna/v.mp4','mp4','My-Downloads/Movie-Downloads/Big Hero 6 2014 BDRip x264-SPARKS')
+	url = raw_input("Enter URL: ")
+	name = raw_input("Enter name: ")
+	divide_n_download(url, name,'zip','My-Downloads/')
 
 
 

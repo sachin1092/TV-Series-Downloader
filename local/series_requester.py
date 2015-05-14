@@ -43,7 +43,7 @@ def download(series, season, episode):
 
         try:
             direct_download.divide_n_download(series + '_s' + str(season) + 'e' + str(episode), download_url, ext, (
-                'My-Downloads/Series-Downloads/' + series.replace('_', ' ').title() + '/Season %d' % season))
+                'My-Downloads/Series-Downloads/' + series.replace('_', ' ').title().strip() + '/Season %d' % season))
         except:
             print "\n\n\nError:"
             print '*' * 50
@@ -98,8 +98,15 @@ def check():
             elif last_episode == episode:
                 write_to_requester_log("No new episodes")
         elif last_season < season:
-            for ep in range(0, episode + 1):
-                download(series, season, ep)
+            for n_season in range(last_season, season + 1):
+                if last_season == n_season:
+                    for ep in range(last_episode+1, 25):
+                        try:
+                            download(series, n_season, ep)
+                        except Exception:
+                            break
+                for ep in range(0, episode + 1):
+                    download(series, n_season, ep)
 
         elif last_season > season:
             write_to_requester_log("Wrong config, Please check")

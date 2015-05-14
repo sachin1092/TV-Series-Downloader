@@ -19,6 +19,7 @@ base_url = "http://subscene.com"
 def download_sub(file_name, f_path, new_name=None):
 
     try:
+        f_path = f_path.strip()
         if not os.path.exists(f_path):
             os.makedirs(f_path)
 
