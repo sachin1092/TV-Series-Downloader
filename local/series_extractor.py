@@ -22,6 +22,7 @@ import traceback
 
 
 def extract_episode_info(series, season, ep, skip_urls=None):
+    
     base_url = 'http://watch-tv-series.to'
 
     write_to_requester_log("\n")
@@ -32,6 +33,9 @@ def extract_episode_info(series, season, ep, skip_urls=None):
                                   + series + "_s" + str(season) + "_e" + str(ep) + ".html")
     write_to_requester_log("Requesting URL http://watch-tv-series.to/episode/"
                            + series + "_s" + str(season) + "_e" + str(ep) + ".html")
+
+    if "Um, Where did the page go?" in episode_page.content:
+        return False
 
     sleep(1)
     episode_tree = html.fromstring(episode_page.text)

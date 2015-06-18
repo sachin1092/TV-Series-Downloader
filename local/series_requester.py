@@ -27,6 +27,10 @@ def download(series, season, episode):
 
         print "-" * 20
         episode_info = extract_episode_info(series, season, episode, skip_urls=urls_used)
+
+        if episode_info is False:
+            return False
+
         if "error" in episode_info.keys():
             write_to_requester_log(episode_info.get("error"), True)
             done = True
@@ -64,6 +68,7 @@ def download(series, season, episode):
             config.set('Series', 'list', json.dumps(series_list))
             with open('downloader.ini', 'wb') as configfile:
                 config.write(configfile)
+            return True
 
 
 def check():
@@ -102,11 +107,14 @@ def check():
                 if last_season == n_season:
                     for ep in range(last_episode+1, 25):
                         try:
-                            download(series, n_season, ep)
+                            if not download(series, n_season, ep):
+                                break
                         except Exception:
                             break
-                for ep in range(0, episode + 1):
-                    download(series, n_season, ep)
+                else:
+                    for ep in range(1, episode + 1):
+                        if not download(series, n_season, ep):
+                            break
 
         elif last_season > season:
             write_to_requester_log("Wrong config, Please check")
