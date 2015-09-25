@@ -110,7 +110,7 @@ def get_series_url(name):
     write_to_requester_log(url, False)
     search_request = m_requests.get(url)
     search_page = html.fromstring(search_request.text)
-    result = search_page.xpath('/html/body/div[1]/div[2]/div[2]/a')[0].values()[0]
+    result = search_page.xpath('/html/body/div[2]/div[2]/div[2]/a')[0].values()[0]
     result = result.replace("watch", "tv")
     return result
 
